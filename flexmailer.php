@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Civi v4.6 does not provide all the API's we would need to define
+ * FlexMailer in an extension, but you can patch core to simulate them.
+ * These define()s tell core to enable any such hacks (if available).
+ */
+
+define('CIVICRM_FLEXMAILER_HACK_DELIVER', '\Civi\FlexMailer\FlexMailer::createAndRun');
+define('CIVICRM_FLEXMAILER_HACK_SERVICES', '\Civi\FlexMailer\Services::registerServices');
+define('CIVICRM_FLEXMAILER_HACK_LISTENERS', '\Civi\FlexMailer\Services::registerListeners');
+
 require_once 'flexmailer.civix.php';
 
 /**
