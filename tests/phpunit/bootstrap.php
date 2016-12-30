@@ -2,7 +2,17 @@
 
 ini_set('memory_limit', '2G');
 ini_set('safe_mode', 0);
-eval(cv('php:boot --level=classloader', 'phpcode'));
+
+// We need to allow CiviUnitTestCase... but may break E2E support....
+
+// eval(cv('php:boot --level=classloader', 'phpcode'));
+define('CIVICRM_TEST', 1);
+putenv('CIVICRM_UF=' . ($_ENV['CIVICRM_UF'] = 'UnitTests'));
+eval(cv('php:boot --level=settings', 'phpcode'));
+
+if (CIVICRM_UF === 'UnitTests') {
+  Civi\Test::headless()->apply();
+}
 
 /**
  * Call the "cv" command.
