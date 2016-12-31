@@ -1,11 +1,14 @@
 <?php
 
+require_once dirname(dirname(__DIR__)) . '/flexmailer.php';
+
 ini_set('memory_limit', '2G');
 ini_set('safe_mode', 0);
 
 // We need to allow CiviUnitTestCase... but may break E2E support....
 
 // eval(cv('php:boot --level=classloader', 'phpcode'));
+define('CIVICRM_CONTAINER_CACHE', 'never');
 define('CIVICRM_TEST', 1);
 putenv('CIVICRM_UF=' . ($_ENV['CIVICRM_UF'] = 'UnitTests'));
 eval(cv('php:boot --level=settings', 'phpcode'));
