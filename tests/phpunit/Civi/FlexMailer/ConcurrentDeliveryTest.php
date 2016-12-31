@@ -50,9 +50,15 @@ require_once 'tests/phpunit/api/v3/JobProcessMailingTest.php';
 class ConcurrentDeliveryTest extends \api_v3_JobProcessMailingTest {
 
   public function setUp() {
+    // Activate before transactions are setup.
+    $manager = \CRM_Extension_System::singleton()->getManager();
+    if ($manager->getStatus('org.civicrm.flexmailer') !== \CRM_Extension_Manager::STATUS_INSTALLED) {
+      $manager->install(array('org.civicrm.flexmailer'));
+    }
+
     parent::setUp();
+
     \CRM_Core_BAO_Setting::setItem(TRUE, 'Mailing Preferences', 'experimentalFlexMailerEngine');
-    \CRM_Extension_System::singleton()->getManager()->install(array('org.civicrm.flexmailer'));
   }
 
   public function tearDown() {
