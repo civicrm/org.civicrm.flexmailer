@@ -48,17 +48,68 @@ class Services {
     $container->setDefinition('civi_flexmailer_open_tracker', new Definition('Civi\FlexMailer\Listener\OpenTracker'));
     $container->setDefinition('civi_flexmailer_default_sender', new Definition('Civi\FlexMailer\Listener\DefaultSender'));
     $container->setDefinition('civi_flexmailer_hooks', new Definition('Civi\FlexMailer\Listener\HookAdapter'));
+
+    foreach (self::getListenerSpecs() as $listenerSpec) {
+      $container->findDefinition('dispatcher')->addMethodCall('addListenerService', $listenerSpec);
+    }
   }
 
   public static function registerListeners(ContainerAwareEventDispatcher $dispatcher) {
+    foreach (self::getListenerSpecs() as $listenerSpec) {
+      $dispatcher->addListenerService($listenerSpec[0], $listenerSpec[1], $listenerSpec[2]);
+    }
+  }
+
+  /**
+   * Get a list of listeners required for FlexMailer.
+   *
+   * This is a standalone, private function because we're experimenting
+   * with how exactly to handle the registration -- e.g. via
+   * `registerServices()` or via `registerListeners()`.
+   *
+   * @return array
+   *   Arguments to pass to addListenerService($eventName, $callbackSvc, $priority).
+   */
+  protected static function getListenerSpecs() {
     $terminalPriority = -100;
-    $dispatcher->addListenerService(FlexMailer::EVENT_RUN, array('civi_flexmailer_abdicator', 'onRun'), $terminalPriority);
-    $dispatcher->addListenerService(FlexMailer::EVENT_WALK, array('civi_flexmailer_default_batcher', 'onWalkBatches'), $terminalPriority);
-    $dispatcher->addListenerService(FlexMailer::EVENT_RUN, array('civi_flexmailer_default_composer', 'onRun'), 0);
-    $dispatcher->addListenerService(FlexMailer::EVENT_COMPOSE, array('civi_flexmailer_default_composer', 'onComposeBatch'), $terminalPriority);
-    $dispatcher->addListenerService(FlexMailer::EVENT_ALTER, array('civi_flexmailer_open_tracker', 'onAlterBatch'), -20);
-    $dispatcher->addListenerService(FlexMailer::EVENT_ALTER, array('civi_flexmailer_hooks', 'onAlterBatch'), -30);
-    $dispatcher->addListenerService(FlexMailer::EVENT_SEND, array('civi_flexmailer_default_sender', 'onSendBatch'), $terminalPriority);
+
+    $listenerSpecs = array();
+    $listenerSpecs[] = array(
+      FlexMailer::EVENT_RUN,
+      array('civi_flexmailer_abdicator', 'onRun'),
+      $terminalPriority,
+    );
+    $listenerSpecs[] = array(
+      FlexMailer::EVENT_WALK,
+      array('civi_flexmailer_default_batcher', 'onWalkBatches'),
+      $terminalPriority,
+    );
+    $listenerSpecs[] = array(
+      FlexMailer::EVENT_RUN,
+      array('civi_flexmailer_default_composer', 'onRun'),
+      0,
+    );
+    $listenerSpecs[] = array(
+      FlexMailer::EVENT_COMPOSE,
+      array('civi_flexmailer_default_composer', 'onComposeBatch'),
+      $terminalPriority,
+    );
+    $listenerSpecs[] = array(
+      FlexMailer::EVENT_ALTER,
+      array('civi_flexmailer_open_tracker', 'onAlterBatch'),
+      -20,
+    );
+    $listenerSpecs[] = array(
+      FlexMailer::EVENT_ALTER,
+      array('civi_flexmailer_hooks', 'onAlterBatch'),
+      -30,
+    );
+    $listenerSpecs[] = array(
+      FlexMailer::EVENT_SEND,
+      array('civi_flexmailer_default_sender', 'onSendBatch'),
+      $terminalPriority,
+    );
+    return $listenerSpecs;
   }
 
 }

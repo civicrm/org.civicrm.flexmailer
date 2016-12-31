@@ -7,8 +7,8 @@
  */
 
 define('CIVICRM_FLEXMAILER_HACK_DELIVER', '\Civi\FlexMailer\FlexMailer::createAndRun');
-define('CIVICRM_FLEXMAILER_HACK_SERVICES', '\Civi\FlexMailer\Services::registerServices');
-define('CIVICRM_FLEXMAILER_HACK_LISTENERS', '\Civi\FlexMailer\Services::registerListeners');
+//define('CIVICRM_FLEXMAILER_HACK_SERVICES', '\Civi\FlexMailer\Services::registerServices');
+//define('CIVICRM_FLEXMAILER_HACK_LISTENERS', '\Civi\FlexMailer\Services::registerListeners');
 
 require_once 'flexmailer.civix.php';
 
@@ -199,3 +199,13 @@ function flexmailer_civicrm_navigationMenu(&$menu) {
   ));
   _flexmailer_civix_navigationMenu($menu);
 } // */
+
+/**
+ * Implements hook_civicrm_container().
+ */
+function flexmailer_civicrm_container($container) {
+  if (version_compare(\CRM_Utils_System::version(), '4.7.0', '>=')) {
+    $container->addResource(new \Symfony\Component\Config\Resource\FileResource(__FILE__));
+  }
+  \Civi\FlexMailer\Services::registerServices($container);
+}
