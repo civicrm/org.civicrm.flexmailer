@@ -1,14 +1,14 @@
 # org.civicrm.flexmailer
 
-The FlexMailer is a mail-blaster for CiviCRM v4.7+ which supports batching and events.
+The FlexMailer is a email delivery system for CiviCRM v4.7+ which supports batching and events.
 
 Specifically, it emits five Symfony events:
 
-  * `WalkBatchesEvent`: Examine the recipient list and pull out a subset for whom you want to send email.
-  * `ComposeBatchEvent`: Given a batch of recipients, prepare an email message for each.
-  * `AlterBatchEvent`: Given a batch of recipients and their messages, change the content of the messages.
-  * `SendBatchEvent`: Given a batch of recipients and their  messages, send the messages out.
-  * `RunEvent`: Execute the main-loop (with all of the above steps).
+  * [`WalkBatchesEvent`](src/Event/WalkBatchesEvent.php) (`EVENT_WALK`): Examine the recipient list and pull out a subset for whom you want to send email.
+  * [`ComposeBatchEvent`](src/Event/ComposeBatchEvent.php) (`EVENT_COMPOSE`): Given a batch of recipients, prepare an email message for each.
+  * [`AlterBatchEvent`](src/Event/AlterBatchEvent.php) (`EVENT_ALTER`): Given a batch of recipients and their messages, change the content of the messages.
+  * [`SendBatchEvent`](src/Event/SendBatchEvent.php) (`EVENT_SEND`): Given a batch of recipients and their  messages, send the messages out.
+  * [`RunEvent`](src/Event/RunEvent.php) (`EVENT_RUN`): Execute the main-loop (with all of the above steps).
 
 FlexMailer includes default listeners for all of these events.  They behave
 in basically the same way as CiviMail's traditional BAO-based delivery
@@ -28,7 +28,7 @@ default listener by calling `$event->stopPropagation()`.
 
 ## Unit Tests
 
-The unit tests are based on `phpunit` and `cv`. Simply run:
+The headless unit tests are based on `phpunit` and `cv`. Simply run:
 
 ```
 phpunit4
