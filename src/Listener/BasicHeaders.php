@@ -61,8 +61,18 @@ class BasicHeaders extends BaseListener {
       $mailParams['job_id'] = $e->getJob()->id;
 
       $mailParams['From'] = "\"{$mailing->from_name}\" <{$mailing->from_email}>";
-      $mailParams['Reply-To'] = $verp['reply'];
-      if ($mailing->replyto_email && ($mailParams['From'] != $mailing->replyto_email)) {
+
+      // This old behavior for choosing Reply-To feels flawed to me -- if
+      // the user has chosen a Reply-To that matches the From, then it uses VERP?!
+      // $mailParams['Reply-To'] = $verp['reply'];
+      // if ($mailing->replyto_email && ($mailParams['From'] != $mailing->replyto_email)) {
+      //  $mailParams['Reply-To'] = $mailing->replyto_email;
+      // }
+
+      if (!\CRM_Mailing_BAO_Mailing::overrideVerp($e->getJob()->id)) {
+        $mailParams['Reply-To'] = $verp['reply'];
+      }
+      elseif ($mailing->replyto_email && ($mailParams['From'] != $mailing->replyto_email)) {
         $mailParams['Reply-To'] = $mailing->replyto_email;
       }
 
