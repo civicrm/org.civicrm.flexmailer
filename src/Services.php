@@ -72,49 +72,17 @@ class Services {
    *   Arguments to pass to addListenerService($eventName, $callbackSvc, $priority).
    */
   protected static function getListenerSpecs() {
-    $terminalPriority = -100;
+    $end = -100;
 
     $listenerSpecs = array();
-    $listenerSpecs[] = array(
-      FlexMailer::EVENT_RUN,
-      array('civi_flexmailer_abdicator', 'onRun'),
-      $terminalPriority,
-    );
-    $listenerSpecs[] = array(
-      FlexMailer::EVENT_WALK,
-      array('civi_flexmailer_default_batcher', 'onWalkBatches'),
-      $terminalPriority,
-    );
-    $listenerSpecs[] = array(
-      FlexMailer::EVENT_RUN,
-      array('civi_flexmailer_default_composer', 'onRun'),
-      0,
-    );
-    $listenerSpecs[] = array(
-      FlexMailer::EVENT_COMPOSE,
-      array('civi_flexmailer_default_composer', 'onComposeBatch'),
-      $terminalPriority,
-    );
-    $listenerSpecs[] = array(
-      FlexMailer::EVENT_ALTER,
-      array('civi_flexmailer_bounce_tracker', 'onAlterBatch'),
-      -20,
-    );
-    $listenerSpecs[] = array(
-      FlexMailer::EVENT_ALTER,
-      array('civi_flexmailer_open_tracker', 'onAlterBatch'),
-      -20,
-    );
-    $listenerSpecs[] = array(
-      FlexMailer::EVENT_ALTER,
-      array('civi_flexmailer_hooks', 'onAlterBatch'),
-      -30,
-    );
-    $listenerSpecs[] = array(
-      FlexMailer::EVENT_SEND,
-      array('civi_flexmailer_default_sender', 'onSendBatch'),
-      $terminalPriority,
-    );
+    $listenerSpecs[] = array(FlexMailer::EVENT_RUN, array('civi_flexmailer_abdicator', 'onRun'), $end);
+    $listenerSpecs[] = array(FlexMailer::EVENT_WALK, array('civi_flexmailer_default_batcher', 'onWalkBatches'), $end);
+    $listenerSpecs[] = array(FlexMailer::EVENT_RUN, array('civi_flexmailer_default_composer', 'onRun'), 0);
+    $listenerSpecs[] = array(FlexMailer::EVENT_COMPOSE, array('civi_flexmailer_default_composer', 'onComposeBatch'), $end);
+    $listenerSpecs[] = array(FlexMailer::EVENT_ALTER, array('civi_flexmailer_bounce_tracker', 'onAlterBatch'), -20);
+    $listenerSpecs[] = array(FlexMailer::EVENT_ALTER, array('civi_flexmailer_open_tracker', 'onAlterBatch'), -20);
+    $listenerSpecs[] = array(FlexMailer::EVENT_ALTER, array('civi_flexmailer_hooks', 'onAlterBatch'), -30);
+    $listenerSpecs[] = array(FlexMailer::EVENT_SEND, array('civi_flexmailer_default_sender', 'onSendBatch'), $end);
     return $listenerSpecs;
   }
 
