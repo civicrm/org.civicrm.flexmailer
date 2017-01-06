@@ -48,7 +48,7 @@ namespace Civi\FlexMailer\Event;
 class ComposeBatchEvent extends BaseEvent {
 
   /**
-   * @var array<FlexMailerTask>
+   * @var array<\Civi\FlexMailer\FlexMailerTask>
    */
   private $tasks;
 
@@ -58,7 +58,7 @@ class ComposeBatchEvent extends BaseEvent {
   }
 
   /**
-   * @return array<FlexMailerTask>
+   * @return array<\Civi\FlexMailer\FlexMailerTask>
    */
   public function getTasks() {
     return $this->tasks;

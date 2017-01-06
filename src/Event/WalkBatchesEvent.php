@@ -64,7 +64,7 @@ class WalkBatchesEvent extends BaseEvent {
   }
 
   /**
-   * @param array <FlexMailerTask> $tasks
+   * @param array <\Civi\FlexMailer\FlexMailerTask> $tasks
    * @return mixed
    */
   public function visit($tasks) {
