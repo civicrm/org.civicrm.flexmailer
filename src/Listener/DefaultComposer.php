@@ -131,7 +131,6 @@ class DefaultComposer extends BaseListener {
       }
     }
 
-    $tp->addMessage('toName', '{contact.display_name}', 'text/plain');
     $tp->addMessage('subject', $templates['subject'], 'text/plain');
     $tp->addMessage('body_text',
       isset($templates['text']) ? $templates['text'] : '', 'text/plain');
@@ -193,8 +192,6 @@ class DefaultComposer extends BaseListener {
     $mailParams['text'] = $row->render('body_text');
     $mailParams['html'] = $row->render('body_html');
     $mailParams['attachments'] = $e->getAttachments();
-    $mailParams['toName'] = $row->render('toName');
-    $mailParams['toEmail'] = $task->getAddress();
     return $mailParams;
   }
 
