@@ -194,15 +194,15 @@ class DefaultComposer extends BaseListener {
     // TODO: Consider moving functional (non-visual) headers to separate listeners.
 
     // Email headers
-    $mailParams['Return-Path'] = $verp['bounce'];
     $mailParams['From'] = "\"{$mailing->from_name}\" <{$mailing->from_email}>";
+
     $mailParams['List-Unsubscribe'] = "<mailto:{$verp['unsubscribe']}>";
+
     \CRM_Mailing_BAO_Mailing::addMessageIdHeader($mailParams, 'm',
       $e->getJob()->id, $task->getEventQueueId(), $task->getHash());
     $mailParams['Subject'] = $row->render('subject');
     //if ($isForward) {$mailParams['Subject'] = "[Fwd:{$this->subject}]";}
     $mailParams['Precedence'] = 'bulk';
-    $mailParams['X-CiviMail-Bounce'] = $verp['bounce'];
     $mailParams['Reply-To'] = $verp['reply'];
     if ($mailing->replyto_email && ($mailParams['From'] != $mailing->replyto_email)) {
       $mailParams['Reply-To'] = $mailing->replyto_email;
