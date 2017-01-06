@@ -101,7 +101,7 @@ class DefaultComposer extends BaseListener {
    */
   public function createTokenProcessorContext(ComposeBatchEvent $e) {
     return array(
-      'controller' => '\Civi\FlexMailer\Listener\DefaultComposer',
+      'controller' => get_class($this),
       // FIXME: Use template_type, template_options
       'smarty' => defined('CIVICRM_MAIL_SMARTY') && CIVICRM_MAIL_SMARTY ? TRUE : FALSE,
       'mailingId' => $e->getMailing()->id,
