@@ -26,7 +26,7 @@
  */
 namespace Civi\FlexMailer\Listener;
 
-use Civi\FlexMailer\Event\AlterBatchEvent;
+use Civi\FlexMailer\Event\ComposeBatchEvent;
 use Civi\FlexMailer\FlexMailerTask;
 
 class HookAdapter extends BaseListener {
@@ -34,9 +34,9 @@ class HookAdapter extends BaseListener {
   /**
    * Expose to hook_civicrm_alterMailParams.
    *
-   * @param \Civi\FlexMailer\Event\AlterBatchEvent $e
+   * @param \Civi\FlexMailer\Event\ComposeBatchEvent $e
    */
-  public function onAlterBatch(AlterBatchEvent $e) {
+  public function onComposeBatch(ComposeBatchEvent $e) {
     if (!$this->isActive()) {
       return;
     }

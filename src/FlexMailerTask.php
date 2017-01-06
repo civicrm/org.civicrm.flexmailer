@@ -123,9 +123,7 @@ class FlexMailerTask {
    * @return bool
    */
   public function hasContent() {
-    return !empty($this->mailParams['html'])
-    || !empty($this->mailParams['text'])
-    || !empty($this->mailParams['attachments']);
+    return !empty($this->mailParams['html']) || !empty($this->mailParams['text']);
   }
 
   /**

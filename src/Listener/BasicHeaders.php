@@ -26,7 +26,7 @@
  */
 namespace Civi\FlexMailer\Listener;
 
-use Civi\FlexMailer\Event\AlterBatchEvent;
+use Civi\FlexMailer\Event\ComposeBatchEvent;
 use Civi\FlexMailer\FlexMailerTask;
 
 class BasicHeaders extends BaseListener {
@@ -34,13 +34,22 @@ class BasicHeaders extends BaseListener {
   /**
    * Inject basic headers
    *
-   * @param \Civi\FlexMailer\Event\AlterBatchEvent $e
+   * @param \Civi\FlexMailer\Event\ComposeBatchEvent $e
    */
-  public function onAlterBatch(AlterBatchEvent $e) {
+  public function onComposeBatch(ComposeBatchEvent $e) {
+    if (!$this->isActive()) {
+      return;
+    }
+
     $mailing = $e->getMailing();
 
     foreach ($e->getTasks() as $task) {
       /** @var FlexMailerTask $task */
+
+      if ($task->hasContent()) {
+        continue;
+      }
+
       list($verp) = $mailing->getVerpAndUrlsAndHeaders(
         $e->getJob()->id, $task->getEventQueueId(), $task->getHash(),
         $task->getAddress());
@@ -61,7 +70,6 @@ class BasicHeaders extends BaseListener {
         $mailParams,
         $task->getMailParams()
       ));
-
     }
   }
 

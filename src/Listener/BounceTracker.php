@@ -26,7 +26,7 @@
  */
 namespace Civi\FlexMailer\Listener;
 
-use Civi\FlexMailer\Event\AlterBatchEvent;
+use Civi\FlexMailer\Event\ComposeBatchEvent;
 use Civi\FlexMailer\FlexMailerTask;
 
 class BounceTracker extends BaseListener {
@@ -34,9 +34,13 @@ class BounceTracker extends BaseListener {
   /**
    * Inject bounce-tracking codes.
    *
-   * @param \Civi\FlexMailer\Event\AlterBatchEvent $e
+   * @param \Civi\FlexMailer\Event\ComposeBatchEvent $e
    */
-  public function onAlterBatch(AlterBatchEvent $e) {
+  public function onComposeBatch(ComposeBatchEvent $e) {
+    if (!$this->isActive()) {
+      return;
+    }
+
     $mailing = $e->getMailing();
 
     foreach ($e->getTasks() as $task) {

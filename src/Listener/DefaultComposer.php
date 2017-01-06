@@ -70,8 +70,6 @@ class DefaultComposer extends BaseListener {
       return;
     }
 
-    $e->stopPropagation();
-
     $mailing = $e->getMailing();
 
     if (property_exists($mailing, 'language') && $mailing->language && $mailing->language != 'en_US') {

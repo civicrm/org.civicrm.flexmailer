@@ -33,15 +33,10 @@ namespace Civi\FlexMailer\Event;
  * The general formula for an agent handling ComposeBatchEvent:
  *
  * ```php
- * $event->stopPropagation();
  * foreach ($event->getTasks() as $task) {
- *   $task->setMailParams(array(
- *     'From' => '"Alice" <alice@example.org>',
- *     'Subject' => 'Hello',
- *     'text' => 'Hello there',
- *     'html' => '<html><body><p>Hello there</p></body></html>',
- *     ...
- *   ));
+ *   $task->setMailParam('Subject', 'Hello');
+ *   $task->setMailParam('text', 'Hello there');
+ *   $task->setMailParam('html', '<html><body><p>Hello there</p></body></html>');
  * }
  * ```
  */

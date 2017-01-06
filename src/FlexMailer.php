@@ -25,7 +25,6 @@
  +--------------------------------------------------------------------+
  */
 namespace Civi\FlexMailer;
-use Civi\FlexMailer\Event\AlterBatchEvent;
 use Civi\FlexMailer\Event\ComposeBatchEvent;
 use Civi\FlexMailer\Event\RunEvent;
 use Civi\FlexMailer\Event\SendBatchEvent;
@@ -47,8 +46,6 @@ use \Symfony\Component\EventDispatcher\EventDispatcherInterface;
  *     for whom you want to send email.
  *   - ComposeBatchEvent: Given a batch of recipients, prepare an email message
  *     for each.
- *   - AlterBatchEvent: Given a batch of recipients and their messages, change the
- *     content of the messages.
  *   - SendBatchEvent: Given a batch of recipients and their  messages, send
  *     the messages out.
  *   - RunEvent: Execute the main-loop (with all of the above steps).
@@ -73,8 +70,6 @@ use \Symfony\Component\EventDispatcher\EventDispatcherInterface;
  *    Listen for WalkBatchesEvent.
  *  - If you want to compose messages in a new way (e.g. a different
  *    templating language), then listen for ComposeBatchEvent.
- *  - If you want to add extra email headers or tracking codes,
- *    then listen for AlterBatchEvent.
  *  - If you want to deliver messages through a different medium
  *    (such as web-services or batched SMTP), listen for SendBatchEvent.
  *
@@ -96,7 +91,6 @@ class FlexMailer {
   const EVENT_RUN = 'civi.flexmailer.run';
   const EVENT_WALK = 'civi.flexmailer.walk';
   const EVENT_COMPOSE = 'civi.flexmailer.compose';
-  const EVENT_ALTER = 'civi.flexmailer.alter';
   const EVENT_SEND = 'civi.flexmailer.send';
 
   /**
@@ -108,7 +102,6 @@ class FlexMailer {
       self::EVENT_RUN => 'Civi\\FlexMailer\\Event\\RunEvent',
       self::EVENT_WALK => 'Civi\\FlexMailer\\Event\\WalkBatchesEvent',
       self::EVENT_COMPOSE => 'Civi\\FlexMailer\\Event\\ComposeBatchEvent',
-      self::EVENT_ALTER => 'Civi\\FlexMailer\\Event\\AlterBatchEvent',
       self::EVENT_SEND => 'Civi\\FlexMailer\\Event\\SendBatchEvent',
     );
   }
@@ -182,7 +175,6 @@ class FlexMailer {
 
     $walkBatches = $this->fireWalkBatches(function ($tasks) use ($flexMailer) {
       $flexMailer->fireComposeBatch($tasks);
-      $flexMailer->fireAlterBatch($tasks);
       $sendBatch = $flexMailer->fireSendBatch($tasks);
       return $sendBatch->getCompleted();
     });
@@ -231,16 +223,6 @@ class FlexMailer {
   public function fireComposeBatch($tasks) {
     $event = new ComposeBatchEvent($this->context, $tasks);
     $this->dispatcher->dispatch(self::EVENT_COMPOSE, $event);
-    return $event;
-  }
-
-  /**
-   * @param array<FlexMailerTask> $tasks
-   * @return AlterBatchEvent
-   */
-  public function fireAlterBatch($tasks) {
-    $event = new AlterBatchEvent($this->context, $tasks);
-    $this->dispatcher->dispatch(self::EVENT_ALTER, $event);
     return $event;
   }
 
