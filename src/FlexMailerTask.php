@@ -137,4 +137,24 @@ class FlexMailerTask {
     return $this;
   }
 
+  /**
+   * @param string $key
+   * @param string $value
+   * @return $this
+   * @see CRM_Utils_Hook::alterMailParams
+   */
+  public function setMailParam($key, $value) {
+    $this->mailParams[$key] = $value;
+    return $this;
+  }
+
+  /**
+   * @param string $key
+   * @return string
+   * @see CRM_Utils_Hook::alterMailParams
+   */
+  public function getMailParam($key) {
+    return isset($this->mailParams[$key]) ? $this->mailParams[$key] : NULL;
+  }
+
 }
