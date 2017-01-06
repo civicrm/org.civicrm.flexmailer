@@ -31,6 +31,7 @@ use Civi\FlexMailer\Event\ComposeBatchEvent;
 use Civi\FlexMailer\Event\RunEvent;
 use Civi\FlexMailer\Event\SendBatchEvent;
 use Civi\FlexMailer\Event\WalkBatchesEvent;
+use Civi\FlexMailer\FlexMailerTask;
 use Civi\Token\TokenProcessor;
 use Civi\Token\TokenRow;
 use Symfony\Component\EventDispatcher\Event;
@@ -63,6 +64,10 @@ class DefaultSender extends BaseListener {
     foreach ($e->getTasks() as $key => $task) {
       /** @var FlexMailerTask $task */
       /** @var \Mail_mime $message */
+      if (!$task->hasContent()) {
+        continue;
+      }
+
       $message = \Civi\FlexMailer\MailParams::convertMailParamsToMime($task->getMailParams());
 
       if (empty($message)) {

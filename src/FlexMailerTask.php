@@ -64,12 +64,12 @@ class FlexMailerTask {
   private $address;
 
   /**
-   * The individual email message to send (per alterMailPrams).
+   * The individual email message to send (per alterMailParams).
    *
-   * @var array|NULL
+   * @var array
    * @see MailParams
    */
-  private $mailParams = NULL;
+  private $mailParams = array();
 
   /**
    * FlexMailerTask constructor.
@@ -117,6 +117,15 @@ class FlexMailerTask {
    */
   public function getAddress() {
     return $this->address;
+  }
+
+  /**
+   * @return bool
+   */
+  public function hasContent() {
+    return !empty($this->mailParams['html'])
+    || !empty($this->mailParams['text'])
+    || !empty($this->mailParams['attachments']);
   }
 
   /**

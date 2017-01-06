@@ -88,7 +88,10 @@ class DefaultComposer extends BaseListener {
       /** @var FlexMailerTask $task */
       $task = $row->context['flexMailerTask'];
       $mailParams = $this->createMailParams($e, $task, $row);
-      $task->setMailParams($mailParams);
+      $task->setMailParams(array_merge(
+        $mailParams,
+        $task->getMailParams()
+      ));
     }
   }
 
