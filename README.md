@@ -1,21 +1,37 @@
 # org.civicrm.flexmailer
 
-The FlexMailer is a email delivery system for CiviCRM v4.7+ which supports batching and events.
+The FlexMailer is a email delivery system for CiviCRM v4.7+ which supports
+batching and events, such as `WalkBatchesEvent`, `ComposeBatchEvent` and
+`SendBatchEvent`.
+
+FlexMailer includes default listeners for these events.  They behave
+in basically the same way as CiviMail's traditional BAO-based delivery
+system (respecting `mailerJobSize`, `mailThrottleTime`, `mailing_backend`,
+`hook_civicrm_alterMailParams`, etal).  However, it allows you replace
+these in more fine-grained ways.
 
 > NOTE: All examples are untested. This is an early revision of the doc+code!
+
+## Unit Tests
+
+The headless unit tests are based on `phpunit` and `cv`. Simply run:
+
+```
+phpunit4
+```
 
 ## Events: ComposeBatchEvent
 
 The [`ComposeBatchEvent`](src/Event/ComposeBatchEvent.php) (`EVENT_COMPOSE`) builds the email messages.  Each message
-is represented as a [`FlexMailerTask`](src/Event/FlexMailerTask.php) with a list of [`MailParams`](src/MailParams.php).
+is represented as a [`FlexMailerTask`](src/FlexMailerTask.php) with a list of [`MailParams`](src/MailParams.php).
 
-Some listeners are "under the hood" -- they less visible parts of the message, e.g.
+Some listeners are "under the hood" -- they define less visible parts of the message, e.g.
 
- * `BasicHeaders`  defines a number standard headers like `Message-Id`, `Precedence`, `From`, `Reply-To`
+ * `BasicHeaders`  defines `Message-Id`, `Precedence`, `From`, `Reply-To`, and others.
  * `BounceTracker` defines various headers for bounce-tracking.
- * `OpenTracker` appends an HTML tracking code any HTML messages.
+ * `OpenTracker` appends an HTML tracking code to any HTML messages.
 
-The heavy-lifting of composing message content is also handled by a listener, such as
+The heavy-lifting of composing the message content is also handled by a listener, such as
 [`DefaultComposer`](src/Listener/DefaultComposer.php). `DefaultComposer` replicates
 traditional CiviMail functionality:
 
@@ -56,7 +72,7 @@ function _mustache_compose_batch(\Civi\FlexMailer\Event\ComposeBatchEvent $event
 
 This implementation is naive in a few ways -- it performs separate SQL queries for each recipient; it doesn't optimize
 the template compilation; it has a very limited range of tokens; and it doesn't handle click-through tracking.  For
-more information about these, review [`DefaultComposer`](src/Listener/DefaultComposer.php).
+more ideas about these issues, review [`DefaultComposer`](src/Listener/DefaultComposer.php).
 
 > FIXME: Core's `TokenProcessor` is useful for batch-loading token data.
 > However, you currently have to use `addMessage()` and `render()` to kick it
@@ -64,22 +80,12 @@ more information about these, review [`DefaultComposer`](src/Listener/DefaultCom
 > another function that doesn't depend on the template notation -- so that
 > other templates can leverage our token library.
 
-## Events: RunEvent, WalkBatchesEvent, SendBatchEvent
+## Events: SendBatchEvent
 
-These events are responsible for batching and sending messages:
-
-  * [`WalkBatchesEvent`](src/Event/WalkBatchesEvent.php) (`EVENT_WALK`): Examine the recipient list and pull out a subset for whom you want to send email.
-  * [`SendBatchEvent`](src/Event/SendBatchEvent.php) (`EVENT_SEND`): Given a batch of recipients and their  messages, send the messages out.
-  * [`RunEvent`](src/Event/RunEvent.php) (`EVENT_RUN`): Execute the main-loop (with all the steps of `WalkBatchesEvent`, `ComposeBatchEvent`, `SendBatchEvent`).
-
-FlexMailer includes default listeners for all of these events.  They behave
-in basically the same way as CiviMail's traditional BAO-based delivery
-system (respecting `mailerJobSize`, `mailThrottleTime`, `mailing_backend`,
-`hook_civicrm_alterMailParams`, etal).  However, you can replace each one
-with a different algorithm.
-
-For example, suppose you wanted to replace the built-in delivery mechanism
-with a batch-oriented web-service:
+The [`SendBatchEvent`](src/Event/SendBatchEvent.php) (`EVENT_SEND`) takes a
+batch of recipients and messages, and it delivers the messages.  For
+example, suppose you wanted to replace the built-in delivery mechanism with
+a batch-oriented web-service:
 
 ```php
 function example_civicrm_container($container) {
@@ -103,12 +109,33 @@ function _example_send_batch(\Civi\FlexMailer\Event\SendBatchEvent $event) {
 }
 ```
 
-## Unit Tests
+## Events: WalkBatchesEvent
 
-The headless unit tests are based on `phpunit` and `cv`. Simply run:
+The [`WalkBatchesEvent`](src/Event/WalkBatchesEvent.php) (`EVENT_WALK`)
+examines the recipient list and pulls out a subset for whom you want to send
+email.  This is useful if you need strategies for chunking-out deliveries.
 
-```
-phpunit4
+The basic formula for defining your own batch logic is:
+
+```php
+function example_civicrm_container($container) {
+  $container->addResource(new \Symfony\Component\Config\Resource\FileResource(__FILE__));
+  $container->findDefinition('dispatcher')->addMethodCall('addListener',
+    array(\Civi\FlexMailer\FlexMailer::EVENT_WALK, '_example_walk_batches')
+  );
+}
+
+function _example_walk_batches(\Civi\FlexMailer\Event\WalkBatchesEvent $event) {
+  $event->stopPropagation(); // Disable standard delivery
+
+  while (...) {
+    $tasks = array();
+    $task[] = new FlexMailerTask(...);
+    $task[] = new FlexMailerTask(...);
+    $task[] = new FlexMailerTask(...);
+    $event->visit($tasks);
+  }
+}
 ```
 
 ## FAQ: How do you register a listener?
