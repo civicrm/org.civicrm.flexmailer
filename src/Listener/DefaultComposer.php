@@ -182,31 +182,11 @@ class DefaultComposer extends BaseListener {
    * @see \CRM_Utils_Hook::alterMailParams
    */
   public function createMailParams(ComposeBatchEvent $e, FlexMailerTask $task, TokenRow $row) {
-    $mailing = $e->getMailing();
-
-    // Ugh, getVerpAndUrlsAndHeaders() is immensely silly.
-    list($verp) = $mailing->getVerpAndUrlsAndHeaders(
-      $e->getJob()->id, $task->getEventQueueId(), $task->getHash(),
-      $task->getAddress());
-
     $mailParams = array();
 
-    // TODO: Consider moving functional (non-visual) headers to separate listeners.
-
     // Email headers
-    $mailParams['From'] = "\"{$mailing->from_name}\" <{$mailing->from_email}>";
-
-    $mailParams['List-Unsubscribe'] = "<mailto:{$verp['unsubscribe']}>";
-
-    \CRM_Mailing_BAO_Mailing::addMessageIdHeader($mailParams, 'm',
-      $e->getJob()->id, $task->getEventQueueId(), $task->getHash());
     $mailParams['Subject'] = $row->render('subject');
     //if ($isForward) {$mailParams['Subject'] = "[Fwd:{$this->subject}]";}
-    $mailParams['Precedence'] = 'bulk';
-    $mailParams['Reply-To'] = $verp['reply'];
-    if ($mailing->replyto_email && ($mailParams['From'] != $mailing->replyto_email)) {
-      $mailParams['Reply-To'] = $mailing->replyto_email;
-    }
 
     // Oddballs
     $mailParams['text'] = $row->render('body_text');
@@ -214,7 +194,6 @@ class DefaultComposer extends BaseListener {
     $mailParams['attachments'] = $e->getAttachments();
     $mailParams['toName'] = $row->render('toName');
     $mailParams['toEmail'] = $task->getAddress();
-    $mailParams['job_id'] = $e->getJob()->id;
     return $mailParams;
   }
 

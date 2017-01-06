@@ -46,6 +46,7 @@ class Services {
     $container->setDefinition('civi_flexmailer_default_batcher', new Definition('Civi\FlexMailer\Listener\DefaultBatcher'));
     $container->setDefinition('civi_flexmailer_default_composer', new Definition('Civi\FlexMailer\Listener\DefaultComposer'));
     $container->setDefinition('civi_flexmailer_open_tracker', new Definition('Civi\FlexMailer\Listener\OpenTracker'));
+    $container->setDefinition('civi_flexmailer_basic_headers', new Definition('Civi\FlexMailer\Listener\BasicHeaders'));
     $container->setDefinition('civi_flexmailer_bounce_tracker', new Definition('Civi\FlexMailer\Listener\BounceTracker'));
     $container->setDefinition('civi_flexmailer_default_sender', new Definition('Civi\FlexMailer\Listener\DefaultSender'));
     $container->setDefinition('civi_flexmailer_hooks', new Definition('Civi\FlexMailer\Listener\HookAdapter'));
@@ -79,6 +80,7 @@ class Services {
     $listenerSpecs[] = array(FlexMailer::EVENT_WALK, array('civi_flexmailer_default_batcher', 'onWalkBatches'), $end);
     $listenerSpecs[] = array(FlexMailer::EVENT_RUN, array('civi_flexmailer_default_composer', 'onRun'), 0);
     $listenerSpecs[] = array(FlexMailer::EVENT_COMPOSE, array('civi_flexmailer_default_composer', 'onComposeBatch'), $end);
+    $listenerSpecs[] = array(FlexMailer::EVENT_ALTER, array('civi_flexmailer_basic_headers', 'onAlterBatch'), -20);
     $listenerSpecs[] = array(FlexMailer::EVENT_ALTER, array('civi_flexmailer_bounce_tracker', 'onAlterBatch'), -20);
     $listenerSpecs[] = array(FlexMailer::EVENT_ALTER, array('civi_flexmailer_open_tracker', 'onAlterBatch'), -20);
     $listenerSpecs[] = array(FlexMailer::EVENT_ALTER, array('civi_flexmailer_hooks', 'onAlterBatch'), -30);
