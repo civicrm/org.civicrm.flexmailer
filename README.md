@@ -48,7 +48,7 @@ A major goal of FlexMailer is to facilitate a migration toward different templat
 extension might (naively) implement support for Mustache templates using:
 
 ```php
-function mustace_civicrm_container($container) {
+function mustache_civicrm_container($container) {
   $container->addResource(new \Symfony\Component\Config\Resource\FileResource(__FILE__));
   $container->findDefinition('dispatcher')->addMethodCall('addListener',
     array(\Civi\FlexMailer\FlexMailer::EVENT_COMPOSE, '_mustache_compose_batch')
