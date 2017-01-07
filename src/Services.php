@@ -53,6 +53,9 @@ class Services {
     $container->setDefinition('civi_flexmailer_default_sender', new Definition('Civi\FlexMailer\Listener\DefaultSender'));
     $container->setDefinition('civi_flexmailer_hooks', new Definition('Civi\FlexMailer\Listener\HookAdapter'));
 
+    $container->setDefinition('civi_flexmailer_html_click_tracker', new Definition('Civi\FlexMailer\ClickTracker\HtmlClickTracker'));
+    $container->setDefinition('civi_flexmailer_text_click_tracker', new Definition('Civi\FlexMailer\ClickTracker\TextClickTracker'));
+
     foreach (self::getListenerSpecs() as $listenerSpec) {
       $container->findDefinition('dispatcher')->addMethodCall('addListenerService', $listenerSpec);
     }

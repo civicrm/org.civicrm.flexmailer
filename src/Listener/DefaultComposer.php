@@ -117,16 +117,17 @@ class DefaultComposer extends BaseListener {
     // Note: getTemplates() provides a hook for altering content.
     $templates = $e->getMailing()->getTemplates();
 
-    // This needs a better place to go.
+    // TODO This needs a better place to go.
     if ($e->getMailing()->url_tracking) {
-      // TODO: Make it easier to override the URL tracker.
       if (!empty($templates['html'])) {
-        $templates['html'] = TrackableURL::scanAndReplace($templates['html'],
-          $e->getMailing()->id, '{action.eventQueueId}', TRUE);
+        $templates['html'] = \Civi::service('civi_flexmailer_html_click_tracker')
+          ->filterContent(
+            $templates['html'], $e->getMailing()->id, '{action.eventQueueId}');
       }
       if (!empty($templates['text'])) {
-        $templates['text'] = TrackableURL::scanAndReplace($templates['text'],
-          $e->getMailing()->id, '{action.eventQueueId}', FALSE);
+        $templates['text'] = \Civi::service('civi_flexmailer_text_click_tracker')
+          ->filterContent(
+            $templates['text'], $e->getMailing()->id, '{action.eventQueueId}');
       }
     }
 
