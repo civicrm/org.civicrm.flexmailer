@@ -138,6 +138,12 @@ function _example_walk_batches(\Civi\FlexMailer\Event\WalkBatchesEvent $event) {
 }
 ```
 
+## FAQ: How do I see what listeners are active on my system?
+
+```
+cv debug:event-dispatcher /flexmail/
+```
+
 ## FAQ: How do you register a listener?
 
 The examples above use `hook_civicrm_container` to manipulate the `dispatcher`;
