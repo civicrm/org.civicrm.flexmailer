@@ -85,9 +85,8 @@ class DefaultComposer extends BaseListener {
       /** @var TokenRow $row */
       /** @var FlexMailerTask $task */
       $task = $row->context['flexMailerTask'];
-      $mailParams = $this->createMailParams($e, $task, $row);
       $task->setMailParams(array_merge(
-        $mailParams,
+        $this->createMailParams($e, $task, $row),
         $task->getMailParams()
       ));
     }
@@ -147,7 +146,9 @@ class DefaultComposer extends BaseListener {
   public function addAllRows(ComposeBatchEvent $e, TokenProcessor $tp) {
     foreach ($e->getTasks() as $key => $task) {
       /** @var FlexMailerTask $task */
-      $tp->addRow()->context($this->createTokenRowContext($e, $task));
+      if (!$task->hasContent()) {
+        $tp->addRow()->context($this->createTokenRowContext($e, $task));
+      }
     }
   }
 
@@ -182,17 +183,11 @@ class DefaultComposer extends BaseListener {
    * @see \CRM_Utils_Hook::alterMailParams
    */
   public function createMailParams(ComposeBatchEvent $e, FlexMailerTask $task, TokenRow $row) {
-    $mailParams = array();
-
-    // Email headers
-    $mailParams['Subject'] = $row->render('subject');
-    //if ($isForward) {$mailParams['Subject'] = "[Fwd:{$this->subject}]";}
-
-    // Oddballs
-    $mailParams['text'] = $row->render('body_text');
-    $mailParams['html'] = $row->render('body_html');
-    $mailParams['attachments'] = $e->getAttachments();
-    return $mailParams;
+    return array(
+      'Subject' => $row->render('subject'),
+      'text' => $row->render('body_text'),
+      'html' => $row->render('body_html'),
+    );
   }
 
 }
