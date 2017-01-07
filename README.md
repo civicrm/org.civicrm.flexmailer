@@ -159,10 +159,10 @@ For more discussion, see http://symfony.com/doc/current/components/event_dispatc
 There are several advantages of Symfony's event system -- for example, it
 supports type-hinting, better in-source documentation, better
 object-oriented modeling, and better refactoring.  However, that's not why
-FlexMailer uses it.  Two characteristics are particularly relevant to
-FlexMailer -- when you want to have multiple parties influencing an event,
-the EventDispatcher allows you to both (a) set priorities among them and (b)
-allow one listener to veto other listeners.
+FlexMailer uses it.  Firstly, Symfony allows you to have multiple listeners
+in the same module.  Secondly, when you have multiple parties influencing an
+event, the EventDispatcher allows you to both (a) set priorities among them
+and (b) allow one listener to veto other listeners.
 
 Some of these characteristics are also available in CMS event systems, but
 not consistently so.  The challenge of `CRM_Utils_Hook` is that it must
