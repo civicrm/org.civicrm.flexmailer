@@ -1,6 +1,6 @@
 # org.civicrm.flexmailer
 
-The FlexMailer is a email delivery system for CiviCRM v4.7+ which supports
+The FlexMailer is an email delivery system for CiviCRM v4.7+ which supports
 batching and events, such as `WalkBatchesEvent`, `ComposeBatchEvent` and
 `SendBatchEvent`.
 
