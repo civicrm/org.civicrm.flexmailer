@@ -29,7 +29,6 @@ namespace Civi\FlexMailer\Listener;
 use Civi\FlexMailer\Event\ComposeBatchEvent;
 use Civi\FlexMailer\Event\RunEvent;
 use Civi\FlexMailer\FlexMailerTask;
-use Civi\FlexMailer\TrackableURL;
 use Civi\Token\TokenProcessor;
 use Civi\Token\TokenRow;
 
