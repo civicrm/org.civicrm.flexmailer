@@ -80,11 +80,11 @@ more ideas about these issues, review [`DefaultComposer`](src/Listener/DefaultCo
 > another function that doesn't depend on the template notation -- so that
 > other templates can leverage our token library.
 
-> **Tip**: When you register a listener for EVENT_COMPOSE, note the weight.
+> **Tip**: When you register a listener for `EVENT_COMPOSE`, note the weight.
 > The default weight puts your listener in the middle of pipeline -- right
 > before the `DefaultComposer`.  However, you might want to position
-> relative to other places -- e.g.  WEIGHT_PREPARE, WEIGHT_MAIN,
-> WEIGHT_ALTER, or WEIGHT_END.
+> relative to other places -- e.g.  `WEIGHT_PREPARE`, `WEIGHT_MAIN`,
+> `WEIGHT_ALTER`, or `WEIGHT_END`.
 
 ## Events: SendBatchEvent
 
