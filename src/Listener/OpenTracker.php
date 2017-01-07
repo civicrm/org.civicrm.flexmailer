@@ -36,7 +36,7 @@ class OpenTracker extends BaseListener {
    *
    * @param \Civi\FlexMailer\Event\ComposeBatchEvent $e
    */
-  public function onComposeBatch(ComposeBatchEvent $e) {
+  public function onCompose(ComposeBatchEvent $e) {
     if (!$this->isActive() || !$e->getMailing()->open_tracking) {
       return;
     }

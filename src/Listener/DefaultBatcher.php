@@ -37,7 +37,7 @@ class DefaultBatcher extends BaseListener {
    *
    * @param \Civi\FlexMailer\Event\WalkBatchesEvent $e
    */
-  public function onWalkBatches(WalkBatchesEvent $e) {
+  public function onWalk(WalkBatchesEvent $e) {
     if (!$this->isActive()) {
       return;
     }

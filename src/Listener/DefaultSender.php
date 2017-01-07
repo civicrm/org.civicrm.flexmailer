@@ -37,7 +37,7 @@ use Symfony\Component\EventDispatcher\Event;
 class DefaultSender extends BaseListener {
   const BULK_MAIL_INSERT_COUNT = 10;
 
-  public function onSendBatch(SendBatchEvent $e) {
+  public function onSend(SendBatchEvent $e) {
     static $smtpConnectionErrors = 0;
 
     if (!$this->isActive()) {
