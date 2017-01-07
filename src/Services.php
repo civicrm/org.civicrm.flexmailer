@@ -29,6 +29,7 @@ namespace Civi\FlexMailer;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher;
+use Civi\FlexMailer\FlexMailer as FM;
 
 /**
  * Class Services
@@ -81,17 +82,22 @@ class Services {
     $end = -1000;
 
     $listenerSpecs = array();
-    $listenerSpecs[] = array(FlexMailer::EVENT_RUN, array('civi_flexmailer_abdicator', 'onRun'), $end);
-    $listenerSpecs[] = array(FlexMailer::EVENT_WALK, array('civi_flexmailer_default_batcher', 'onWalk'), $end);
-    $listenerSpecs[] = array(FlexMailer::EVENT_RUN, array('civi_flexmailer_default_composer', 'onRun'), 0);
-    $listenerSpecs[] = array(FlexMailer::EVENT_COMPOSE, array('civi_flexmailer_basic_headers', 'onCompose'), 200);
-    $listenerSpecs[] = array(FlexMailer::EVENT_COMPOSE, array('civi_flexmailer_to_header', 'onCompose'), 200);
-    $listenerSpecs[] = array(FlexMailer::EVENT_COMPOSE, array('civi_flexmailer_bounce_tracker', 'onCompose'), 100);
-    $listenerSpecs[] = array(FlexMailer::EVENT_COMPOSE, array('civi_flexmailer_default_composer', 'onCompose'));
-    $listenerSpecs[] = array(FlexMailer::EVENT_COMPOSE, array('civi_flexmailer_attachments', 'onCompose'), -100);
-    $listenerSpecs[] = array(FlexMailer::EVENT_COMPOSE, array('civi_flexmailer_open_tracker', 'onCompose'), -100);
-    $listenerSpecs[] = array(FlexMailer::EVENT_COMPOSE, array('civi_flexmailer_hooks', 'onCompose'), -500);
-    $listenerSpecs[] = array(FlexMailer::EVENT_SEND, array('civi_flexmailer_default_sender', 'onSend'), $end);
+
+    $listenerSpecs[] = array(FM::EVENT_RUN, array('civi_flexmailer_default_composer', 'onRun'), FM::WEIGHT_MAIN);
+    $listenerSpecs[] = array(FM::EVENT_RUN, array('civi_flexmailer_abdicator', 'onRun'), FM::WEIGHT_END);
+
+    $listenerSpecs[] = array(FM::EVENT_WALK, array('civi_flexmailer_default_batcher', 'onWalk'), FM::WEIGHT_END);
+
+    $listenerSpecs[] = array(FM::EVENT_COMPOSE, array('civi_flexmailer_basic_headers', 'onCompose'), FM::WEIGHT_PREPARE);
+    $listenerSpecs[] = array(FM::EVENT_COMPOSE, array('civi_flexmailer_to_header', 'onCompose'), FM::WEIGHT_PREPARE);
+    $listenerSpecs[] = array(FM::EVENT_COMPOSE, array('civi_flexmailer_bounce_tracker', 'onCompose'), FM::WEIGHT_PREPARE);
+    $listenerSpecs[] = array(FM::EVENT_COMPOSE, array('civi_flexmailer_default_composer', 'onCompose'), FM::WEIGHT_MAIN - 100);
+    $listenerSpecs[] = array(FM::EVENT_COMPOSE, array('civi_flexmailer_attachments', 'onCompose'), FM::WEIGHT_ALTER);
+    $listenerSpecs[] = array(FM::EVENT_COMPOSE, array('civi_flexmailer_open_tracker', 'onCompose'), FM::WEIGHT_ALTER);
+    $listenerSpecs[] = array(FM::EVENT_COMPOSE, array('civi_flexmailer_hooks', 'onCompose'), FM::WEIGHT_ALTER - 100);
+
+    $listenerSpecs[] = array(FM::EVENT_SEND, array('civi_flexmailer_default_sender', 'onSend'), FM::WEIGHT_END);
+
     return $listenerSpecs;
   }
 

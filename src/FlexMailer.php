@@ -88,6 +88,11 @@ use \Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class FlexMailer {
 
+  const WEIGHT_PREPARE = 1000;
+  const WEIGHT_MAIN = 0;
+  const WEIGHT_ALTER = -1000;
+  const WEIGHT_END = -2000;
+
   const EVENT_RUN = 'civi.flexmailer.run';
   const EVENT_WALK = 'civi.flexmailer.walk';
   const EVENT_COMPOSE = 'civi.flexmailer.compose';
