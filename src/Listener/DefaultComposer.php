@@ -70,12 +70,6 @@ class DefaultComposer extends BaseListener {
       return;
     }
 
-    $mailing = $e->getMailing();
-
-    if (property_exists($mailing, 'language') && $mailing->language && $mailing->language != 'en_US') {
-      $swapLang = \CRM_Utils_AutoClean::swap('global://dbLocale?getter', 'call://i18n/setLocale', $mailing->language);
-    }
-
     $tp = new TokenProcessor(\Civi::service('dispatcher'), $this->createTokenProcessorContext($e));
     $this->addAllMessageTemplates($e, $tp);
     $this->addAllRows($e, $tp);

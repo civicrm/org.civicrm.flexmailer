@@ -221,6 +221,12 @@ class FlexMailer {
    * @return ComposeBatchEvent
    */
   public function fireComposeBatch($tasks) {
+    // This isn't a great place for this, but it ensures consistent cleanup.
+    $mailing = $this->context['mailing'];
+    if (property_exists($mailing, 'language') && $mailing->language && $mailing->language != 'en_US') {
+      $swapLang = \CRM_Utils_AutoClean::swap('global://dbLocale?getter', 'call://i18n/setLocale', $mailing->language);
+    }
+
     $event = new ComposeBatchEvent($this->context, $tasks);
     $this->dispatcher->dispatch(self::EVENT_COMPOSE, $event);
     return $event;
