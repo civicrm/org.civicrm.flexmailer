@@ -69,9 +69,29 @@ class DefaultComposer extends BaseListener {
       return;
     }
 
-    $tp = new TokenProcessor(\Civi::service('dispatcher'), $this->createTokenProcessorContext($e));
-    $this->addAllMessageTemplates($e, $tp);
-    $this->addAllRows($e, $tp);
+    $tp = new TokenProcessor(\Civi::service('dispatcher'),
+      $this->createTokenProcessorContext($e));
+
+    $tpls = $this->createMessageTemplates($e->getMailing());
+    $tp->addMessage('subject', $tpls['subject'], 'text/plain');
+    $tp->addMessage('body_text', isset($tpls['text']) ? $tpls['text'] : '',
+      'text/plain');
+    $tp->addMessage('body_html', isset($tpls['html']) ? $tpls['html'] : '',
+      'text/html');
+
+    $hasContent = FALSE;
+    foreach ($e->getTasks() as $key => $task) {
+      /** @var FlexMailerTask $task */
+      if (!$task->hasContent()) {
+        $tp->addRow()->context($this->createTokenRowContext($e, $task));
+        $hasContent = TRUE;
+      }
+    }
+
+    if (!$hasContent) {
+      return;
+    }
+
     $tp->evaluate();
 
     foreach ($tp->getRows() as $row) {
@@ -101,52 +121,6 @@ class DefaultComposer extends BaseListener {
   }
 
   /**
-   * Register any message templates for this token processor.
-   *
-   * @param \Civi\FlexMailer\Event\ComposeBatchEvent $e
-   * @param TokenProcessor $tp
-   */
-  public function addAllMessageTemplates(ComposeBatchEvent $e, $tp) {
-    // Note: getTemplates() provides a hook for altering content.
-    $templates = $e->getMailing()->getTemplates();
-
-    // TODO This needs a better place to go.
-    if ($e->getMailing()->url_tracking) {
-      if (!empty($templates['html'])) {
-        $templates['html'] = \Civi::service('civi_flexmailer_html_click_tracker')
-          ->filterContent(
-            $templates['html'], $e->getMailing()->id, '{action.eventQueueId}');
-      }
-      if (!empty($templates['text'])) {
-        $templates['text'] = \Civi::service('civi_flexmailer_text_click_tracker')
-          ->filterContent(
-            $templates['text'], $e->getMailing()->id, '{action.eventQueueId}');
-      }
-    }
-
-    $tp->addMessage('subject', $templates['subject'], 'text/plain');
-    $tp->addMessage('body_text',
-      isset($templates['text']) ? $templates['text'] : '', 'text/plain');
-    $tp->addMessage('body_html',
-      isset($templates['html']) ? $templates['html'] : '', 'text/html');
-  }
-
-  /**
-   * Register an message recipients.
-   *
-   * @param \Civi\FlexMailer\Event\ComposeBatchEvent $e
-   * @param TokenProcessor $tp
-   */
-  public function addAllRows(ComposeBatchEvent $e, TokenProcessor $tp) {
-    foreach ($e->getTasks() as $key => $task) {
-      /** @var FlexMailerTask $task */
-      if (!$task->hasContent()) {
-        $tp->addRow()->context($this->createTokenRowContext($e, $task));
-      }
-    }
-  }
-
-  /**
    * Create contextual data for a message recipient.
    *
    * @param \Civi\FlexMailer\Event\ComposeBatchEvent $e
@@ -154,7 +128,10 @@ class DefaultComposer extends BaseListener {
    * @return array
    *   Contextual data describing the recipient.
    */
-  public function createTokenRowContext(ComposeBatchEvent $e, FlexMailerTask $task) {
+  public function createTokenRowContext(
+    ComposeBatchEvent $e,
+    FlexMailerTask $task
+  ) {
     return array(
       'contactId' => $task->getContactId(),
       'mailingJobId' => $e->getJob()->id,
@@ -176,12 +153,45 @@ class DefaultComposer extends BaseListener {
    * @return array
    * @see \CRM_Utils_Hook::alterMailParams
    */
-  public function createMailParams(ComposeBatchEvent $e, FlexMailerTask $task, TokenRow $row) {
+  public function createMailParams(
+    ComposeBatchEvent $e,
+    FlexMailerTask $task,
+    TokenRow $row
+  ) {
     return array(
       'Subject' => $row->render('subject'),
       'text' => $row->render('body_text'),
       'html' => $row->render('body_html'),
     );
+  }
+
+  /**
+   * Generate the message templates for use with token-processor.
+   *
+   * @param \CRM_Mailing_BAO_Mailing $mailing
+   * @return array
+   */
+  public function createMessageTemplates($mailing) {
+    // Should we be doing this on our own -- without BAO?
+    $templates = $mailing->getTemplates();
+
+    // This needs a better place to go, but it would be problematic
+    // as a listener<ComposeBatchEvent> because of the expected
+    // behavior for tracking tokenized URLs.
+    if ($mailing->url_tracking) {
+      if (!empty($templates['html'])) {
+        $templates['html'] = \Civi::service('civi_flexmailer_html_click_tracker')
+          ->filterContent($templates['html'], $mailing->id,
+            '{action.eventQueueId}');
+      }
+      if (!empty($templates['text'])) {
+        $templates['text'] = \Civi::service('civi_flexmailer_text_click_tracker')
+          ->filterContent($templates['text'], $mailing->id,
+            '{action.eventQueueId}');
+      }
+    }
+
+    return $templates;
   }
 
 }
