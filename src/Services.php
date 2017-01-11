@@ -79,8 +79,6 @@ class Services {
    *   Arguments to pass to addListenerService($eventName, $callbackSvc, $priority).
    */
   protected static function getListenerSpecs() {
-    $end = -1000;
-
     $listenerSpecs = array();
 
     $listenerSpecs[] = array(FM::EVENT_RUN, array('civi_flexmailer_default_composer', 'onRun'), FM::WEIGHT_MAIN);
