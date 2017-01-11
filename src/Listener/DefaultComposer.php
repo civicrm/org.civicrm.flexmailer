@@ -127,6 +127,7 @@ class DefaultComposer extends BaseListener {
    * @param FlexMailerTask $task
    * @return array
    *   Contextual data describing the recipient.
+   *   Typical values are `contactId` or `mailingJobId`.
    */
   public function createTokenRowContext(
     ComposeBatchEvent $e,
@@ -151,6 +152,7 @@ class DefaultComposer extends BaseListener {
    * @param FlexMailerTask $task
    * @param TokenRow $row
    * @return array
+   *   A list of email parameters, such as "Subject", "text", and/or "html".
    * @see \CRM_Utils_Hook::alterMailParams
    */
   public function createMailParams(
@@ -170,25 +172,44 @@ class DefaultComposer extends BaseListener {
    *
    * @param \CRM_Mailing_BAO_Mailing $mailing
    * @return array
+   *   A list of templates. Some combination of:
+   *     - subject: string
+   *     - html: string
+   *     - text: string
    */
   public function createMessageTemplates($mailing) {
-    // Should we be doing this on our own -- without BAO?
     $templates = $mailing->getTemplates();
+    $templates = $this->applyClickTracking($mailing, $templates);
+    return $templates;
+  }
 
-    // This needs a better place to go, but it would be problematic
-    // as a listener<ComposeBatchEvent> because of the expected
-    // behavior for tracking tokenized URLs.
-    if ($mailing->url_tracking) {
-      if (!empty($templates['html'])) {
-        $templates['html'] = \Civi::service('civi_flexmailer_html_click_tracker')
-          ->filterContent($templates['html'], $mailing->id,
-            '{action.eventQueueId}');
-      }
-      if (!empty($templates['text'])) {
-        $templates['text'] = \Civi::service('civi_flexmailer_text_click_tracker')
-          ->filterContent($templates['text'], $mailing->id,
-            '{action.eventQueueId}');
-      }
+  /**
+   * (Tentative) Alter hyperlinks to perform click-tracking.
+   *
+   * This functionality probably belongs somewhere else. The
+   * current placement feels quirky, and it's hard to inspect
+   * via `cv debug:event-dispatcher', but it produces the expected
+   * interactions among tokens and click-tracking.
+   *
+   * @param \CRM_Mailing_BAO_Mailing $mailing
+   * @param array $templates
+   * @return array
+   *   Updated templates.
+   */
+  protected function applyClickTracking($mailing, $templates) {
+    if (!$mailing->url_tracking) {
+      return $templates;
+    }
+
+    if (!empty($templates['html'])) {
+      $templates['html'] = \Civi::service('civi_flexmailer_html_click_tracker')
+        ->filterContent($templates['html'], $mailing->id,
+          '{action.eventQueueId}');
+    }
+    if (!empty($templates['text'])) {
+      $templates['text'] = \Civi::service('civi_flexmailer_text_click_tracker')
+        ->filterContent($templates['text'], $mailing->id,
+          '{action.eventQueueId}');
     }
 
     return $templates;
