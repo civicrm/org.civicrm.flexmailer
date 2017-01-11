@@ -20,7 +20,15 @@ The headless unit tests are based on `phpunit` and `cv`. Simply run:
 phpunit4
 ```
 
-## Events: ComposeBatchEvent
+## Events: Inspection
+
+To see what event listeners are configured, run:
+
+```
+cv debug:event-dispatcher /flexmail/
+```
+
+## Events: `ComposeBatchEvent`
 
 The [`ComposeBatchEvent`](src/Event/ComposeBatchEvent.php) (`EVENT_COMPOSE`) builds the email messages.  Each message
 is represented as a [`FlexMailerTask`](src/FlexMailerTask.php) with a list of [`MailParams`](src/MailParams.php).
@@ -86,7 +94,7 @@ more ideas about these issues, review [`DefaultComposer`](src/Listener/DefaultCo
 > relative to other places -- e.g.  `WEIGHT_PREPARE`, `WEIGHT_MAIN`,
 > `WEIGHT_ALTER`, or `WEIGHT_END`.
 
-## Events: SendBatchEvent
+## Events: `SendBatchEvent`
 
 The [`SendBatchEvent`](src/Event/SendBatchEvent.php) (`EVENT_SEND`) takes a
 batch of recipients and messages, and it delivers the messages.  For
@@ -115,7 +123,7 @@ function _example_send_batch(\Civi\FlexMailer\Event\SendBatchEvent $event) {
 }
 ```
 
-## Events: WalkBatchesEvent
+## Events: `WalkBatchesEvent`
 
 The [`WalkBatchesEvent`](src/Event/WalkBatchesEvent.php) (`EVENT_WALK`)
 examines the recipient list and pulls out a subset for whom you want to send
@@ -142,12 +150,6 @@ function _example_walk_batches(\Civi\FlexMailer\Event\WalkBatchesEvent $event) {
     $event->visit($tasks);
   }
 }
-```
-
-## FAQ: How do I see what listeners are active on my system?
-
-```
-cv debug:event-dispatcher /flexmail/
 ```
 
 ## FAQ: How do you register a listener?
