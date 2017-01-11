@@ -56,9 +56,49 @@ class SimpleFilterTest extends \CiviUnitTestCase {
   }
 
   /**
-   * Ensure that the utility `SimpleFilter::apply()` correctly filters field.
+   * Ensure that the utility `SimpleFilter::byValue()` correctly filters.
    */
-  public function testApply() {
+  public function testByValue() {
+    $test = $this;
+    list($tasks, $e) = $this->createExampleBatch();
+
+    SimpleFilter::byValue($e, 'text', function ($value, $t, $e) use ($test) {
+      $test->assertInstanceOf('Civi\FlexMailer\FlexMailerTask', $t);
+      $test->assertInstanceOf('Civi\FlexMailer\Event\ComposeBatchEvent', $e);
+      $this->assertTrue(in_array($value, array(
+        'eat more cheese',
+        'eat more ice cream',
+      )));
+      return preg_replace('/more/', 'thoughtfully considered quantities of', $value);
+    });
+
+    $this->assertEquals('eat thoughtfully considered quantities of cheese', $tasks[0]->getMailParam('text'));
+    $this->assertEquals('eat thoughtfully considered quantities of ice cream', $tasks[1]->getMailParam('text'));
+  }
+
+  /**
+   * Ensure that the utility `SimpleFilter::byColumn()` correctly filters.
+   */
+  public function testByColumn() {
+    $test = $this;
+    list($tasks, $e) = $this->createExampleBatch();
+
+    SimpleFilter::byColumn($e, 'text', function ($values, $e) use ($test) {
+      $test->assertInstanceOf('Civi\FlexMailer\Event\ComposeBatchEvent', $e);
+      $test->assertEquals('eat more cheese', $values[0]);
+      $test->assertEquals('eat more ice cream', $values[1]);
+      $this->assertEquals(2, count($values));
+      return preg_replace('/more/', 'thoughtfully considered quantities of', $values);
+    });
+
+    $this->assertEquals('eat thoughtfully considered quantities of cheese', $tasks[0]->getMailParam('text'));
+    $this->assertEquals('eat thoughtfully considered quantities of ice cream', $tasks[1]->getMailParam('text'));
+  }
+
+  /**
+   * @return array
+   */
+  protected function createExampleBatch() {
     $tasks = array();
     $tasks[0] = new FlexMailerTask(1000, 2000, 'asdf', 'foo@example.org');
     $tasks[1] = new FlexMailerTask(1001, 2001, 'fdsa', 'bar@example.org');
@@ -67,13 +107,7 @@ class SimpleFilterTest extends \CiviUnitTestCase {
 
     $tasks[0]->setMailParam('text', 'eat more cheese');
     $tasks[1]->setMailParam('text', 'eat more ice cream');
-
-    SimpleFilter::apply($e, 'text', function ($value) {
-      return preg_replace('/more/', 'thoughtfully considered quantities of', $value);
-    });
-
-    $this->assertEquals('eat thoughtfully considered quantities of cheese', $tasks[0]->getMailParam('text'));
-    $this->assertEquals('eat thoughtfully considered quantities of ice cream', $tasks[1]->getMailParam('text'));
+    return array($tasks, $e);
   }
 
 }
