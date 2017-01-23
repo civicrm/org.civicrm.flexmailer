@@ -4,13 +4,13 @@ The FlexMailer is an email delivery system for CiviCRM v4.7+ which supports
 batching and events, such as `WalkBatchesEvent`, `ComposeBatchEvent` and
 `SendBatchEvent`.
 
-FlexMailer includes default listeners for these events.  They behave
+FlexMailer includes default listeners for these events.  The listeners behave
 in basically the same way as CiviMail's traditional BAO-based delivery
 system (respecting `mailerJobSize`, `mailThrottleTime`, `mailing_backend`,
-`hook_civicrm_alterMailParams`, etal).  However, it allows you replace
-these in more fine-grained ways.
+`hook_civicrm_alterMailParams`, etal).  However, this arrangement allows you
+change behaviors in more fine-grained ways.
 
-> NOTE: All examples are untested. This is an early revision of the doc+code!
+> NOTE: Some examples have not been tested well. This is an early revision of the doc+code!
 
 ## Unit Tests
 
