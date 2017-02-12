@@ -12,6 +12,12 @@ change behaviors in more fine-grained ways.
 
 > NOTE: Some examples have not been tested well. This is an early revision of the doc+code!
 
+## Installation
+
+```
+cv dl --dev flexmailer
+```
+
 ## Unit Tests
 
 The headless unit tests are based on `phpunit` and `cv`. Simply run:
