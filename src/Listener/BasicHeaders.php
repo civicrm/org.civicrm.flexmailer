@@ -69,7 +69,7 @@ class BasicHeaders extends BaseListener {
       //  $mailParams['Reply-To'] = $mailing->replyto_email;
       // }
 
-      if (!\CRM_Mailing_BAO_Mailing::overrideVerp($e->getJob()->id)) {
+      if (!$mailing->override_verp) {
         $mailParams['Reply-To'] = $verp['reply'];
       }
       elseif ($mailing->replyto_email && ($mailParams['From'] != $mailing->replyto_email)) {
