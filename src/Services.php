@@ -43,6 +43,10 @@ class Services {
     if (version_compare(\CRM_Utils_System::version(), '4.7.0', '>=')) {
       $container->addResource(new \Symfony\Component\Config\Resource\FileResource(__FILE__));
     }
+
+    $container->setDefinition('civi_flexmailer_api_overrides', new Definition('Civi\API\Provider\ProviderInterface'))
+      ->setFactoryClass(__CLASS__)->setFactoryMethod('createApiOverrides');
+
     $container->setDefinition('civi_flexmailer_abdicator', new Definition('Civi\FlexMailer\Listener\Abdicator'));
     $container->setDefinition('civi_flexmailer_default_batcher', new Definition('Civi\FlexMailer\Listener\DefaultBatcher'));
     $container->setDefinition('civi_flexmailer_default_composer', new Definition('Civi\FlexMailer\Listener\DefaultComposer'));
@@ -65,6 +69,7 @@ class Services {
   public static function registerListeners(ContainerAwareEventDispatcher $dispatcher) {
     foreach (self::getListenerSpecs() as $listenerSpec) {
       $dispatcher->addListenerService($listenerSpec[0], $listenerSpec[1], $listenerSpec[2]);
+      $dispatcher->addSubscriberService('civi_flexmailer_api_overrides', 'Civi\FlexMailer\API\Overrides');
     }
   }
 
@@ -97,6 +102,18 @@ class Services {
     $listenerSpecs[] = array(FM::EVENT_SEND, array('civi_flexmailer_default_sender', 'onSend'), FM::WEIGHT_END);
 
     return $listenerSpecs;
+  }
+
+  /**
+   * Tap into the API kernel and override some of the core APIs.
+   *
+   * @return \Civi\API\Provider\AdhocProvider
+   */
+  public static function createApiOverrides() {
+    $provider = new \Civi\API\Provider\AdhocProvider(3, 'Mailing');
+    // FIXME: stay in sync with upstream perms
+    $provider->addAction('preview', 'access CiviMail', '\Civi\FlexMailer\API\MailingPreview::preview');
+    return $provider;
   }
 
 }
