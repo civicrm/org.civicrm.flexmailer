@@ -40,6 +40,7 @@ class MailingPreview {
     $job->save();
 
     $flexMailer = new FlexMailer(array(
+      'is_preview' => TRUE,
       'mailing' => $mailing,
       'job' => $job, // HMM?
       'attachments' => \CRM_Core_BAO_File::getEntityFile('civicrm_mailing',

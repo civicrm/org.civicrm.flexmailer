@@ -59,4 +59,13 @@ class ComposeBatchEvent extends BaseEvent {
     return $this->tasks;
   }
 
+  /**
+   * @return bool
+   */
+  public function isPreview() {
+    return isset($this->context['is_preview'])
+      ? (bool) $this->context['is_preview']
+      : FALSE;
+  }
+
 }
