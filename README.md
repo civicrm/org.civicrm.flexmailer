@@ -14,8 +14,16 @@ change behaviors in more fine-grained ways.
 
 ## Installation
 
+To download the latest alpha or beta version:
+
 ```
 cv dl --dev flexmailer
+```
+
+To download the latest code from git:
+
+```
+git clone https://github.com/civicrm/org.civicrm.flexmailer.git $(cv path -x ./org.civicrm.flexmailer)
 ```
 
 ## Unit Tests

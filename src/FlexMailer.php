@@ -117,6 +117,7 @@ class FlexMailer {
    *     - mailing: \CRM_Mailing_BAO_Mailing
    *     - job: \CRM_Mailing_BAO_MailingJob
    *     - attachments: array
+   *     - is_preview: bool
    *
    * Additional options may be passed. To avoid naming conflicts, use prefixing.
    */
