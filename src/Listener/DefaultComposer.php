@@ -221,8 +221,10 @@ class DefaultComposer extends BaseListener {
    * @param \Civi\FlexMailer\Event\ComposeBatchEvent $e
    * @return bool
    */
-  protected function isClickTracking(ComposeBatchEvent $e) {
-    return $e->getMailing()->url_tracking;
+  public function isClickTracking(ComposeBatchEvent $e) {
+    // Don't track clicks on previews. Doing so would accumulate a lot
+    // of garbage data.
+    return $e->getMailing()->url_tracking && !$e->isPreview();
   }
 
 }
