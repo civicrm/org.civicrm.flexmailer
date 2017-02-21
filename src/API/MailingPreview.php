@@ -56,8 +56,6 @@ class MailingPreview {
 
     $flexMailer->fireComposeBatch(array($task));
 
-    $job->delete();
-
     return civicrm_api3_create_success(array(
       'id' => $params['id'],
       'contact_id' => $contactID,

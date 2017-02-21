@@ -72,7 +72,7 @@ class DefaultComposer extends BaseListener {
     $tp = new TokenProcessor(\Civi::service('dispatcher'),
       $this->createTokenProcessorContext($e));
 
-    $tpls = $this->createMessageTemplates($e->getMailing());
+    $tpls = $this->createMessageTemplates($e);
     $tp->addMessage('subject', $tpls['subject'], 'text/plain');
     $tp->addMessage('body_text', isset($tpls['text']) ? $tpls['text'] : '',
       'text/plain');
@@ -170,16 +170,18 @@ class DefaultComposer extends BaseListener {
   /**
    * Generate the message templates for use with token-processor.
    *
-   * @param \CRM_Mailing_BAO_Mailing $mailing
+   * @param ComposeBatchEvent $e
    * @return array
    *   A list of templates. Some combination of:
    *     - subject: string
    *     - html: string
    *     - text: string
    */
-  public function createMessageTemplates($mailing) {
-    $templates = $mailing->getTemplates();
-    $templates = $this->applyClickTracking($mailing, $templates);
+  public function createMessageTemplates(ComposeBatchEvent $e) {
+    $templates = $e->getMailing()->getTemplates();
+    if ($this->isClickTracking($e)) {
+      $templates = $this->applyClickTracking($e, $templates);
+    }
     return $templates;
   }
 
@@ -191,15 +193,13 @@ class DefaultComposer extends BaseListener {
    * via `cv debug:event-dispatcher', but it produces the expected
    * interactions among tokens and click-tracking.
    *
-   * @param \CRM_Mailing_BAO_Mailing $mailing
+   * @param ComposeBatchEvent $e
    * @param array $templates
    * @return array
    *   Updated templates.
    */
-  protected function applyClickTracking($mailing, $templates) {
-    if (!$mailing->url_tracking) {
-      return $templates;
-    }
+  protected function applyClickTracking(ComposeBatchEvent $e, $templates) {
+    $mailing = $e->getMailing();
 
     if (!empty($templates['html'])) {
       $templates['html'] = \Civi::service('civi_flexmailer_html_click_tracker')
@@ -213,6 +213,16 @@ class DefaultComposer extends BaseListener {
     }
 
     return $templates;
+  }
+
+  /**
+   * Determine whether to enable click-tracking.
+   *
+   * @param \Civi\FlexMailer\Event\ComposeBatchEvent $e
+   * @return bool
+   */
+  protected function isClickTracking(ComposeBatchEvent $e) {
+    return $e->getMailing()->url_tracking;
   }
 
 }
