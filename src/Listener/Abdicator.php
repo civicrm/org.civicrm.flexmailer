@@ -31,6 +31,26 @@ use Civi\FlexMailer\Event\RunEvent;
 class Abdicator {
 
   /**
+   * @param \CRM_Mailing_BAO_Mailing $mailing
+   * @return bool
+   */
+  public static function isFlexmailPreferred($mailing) {
+    // Hidden setting: "experimentalFlexMailerEngine" (bool)
+    // If TRUE, we will always use FlexMailer's events.
+    // Otherwise, we'll generally abdicate.
+    if (\CRM_Core_BAO_Setting::getItem('Mailing Preferences', 'experimentalFlexMailerEngine')) {
+      return TRUE;
+    }
+
+    // Use FlexMailer for new-style email blasts (with custom `template_type`).
+    if ($mailing->template_type && $mailing->template_type !== 'traditional' && !$mailing->sms_provider_id) {
+      return TRUE;
+    }
+
+    return FALSE;
+  }
+
+  /**
    * Abdicate; defer to the old system.
    *
    * The FlexMailer is in incubation -- it's a heavily reorganized version
@@ -43,16 +63,7 @@ class Abdicator {
    * @param \Civi\FlexMailer\Event\RunEvent $e
    */
   public function onRun(RunEvent $e) {
-    // Hidden setting: "experimentalFlexMailerEngine" (bool)
-    // If TRUE, we will always use FlexMailer's events.
-    // Otherwise, we'll generally abdicate.
-    if (\CRM_Core_BAO_Setting::getItem('Mailing Preferences', 'experimentalFlexMailerEngine')) {
-      return; // OK, we'll continue running.
-    }
-
-    // Use FlexMailer for new-style email blasts (with custom `template_type`).
-    $mailing = $e->getMailing();
-    if ($mailing->template_type && $mailing->template_type !== 'traditional' && !$mailing->sms_provider_id) {
+    if (self::isFlexmailPreferred($e->getMailing())) {
       return; // OK, we'll continue running.
     }
 
