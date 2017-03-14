@@ -46,10 +46,6 @@ spl_autoload_register('_flexmailer_autoload');
  */
 function flexmailer_civicrm_config(&$config) {
   _flexmailer_civix_civicrm_config($config);
-
-  /** @var \Civi\API\Kernel $kernel */
-  $kernel = Civi::service('civi_api_kernel');
-  $kernel->registerApiProvider(Civi::service('civi_flexmailer_api_overrides'));
 }
 
 /**

@@ -28,6 +28,7 @@ namespace Civi\FlexMailer;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher;
 use Civi\FlexMailer\FlexMailer as FM;
 
@@ -64,6 +65,8 @@ class Services {
     foreach (self::getListenerSpecs() as $listenerSpec) {
       $container->findDefinition('dispatcher')->addMethodCall('addListenerService', $listenerSpec);
     }
+
+    $container->findDefinition('civi_api_kernel')->addMethodCall('registerApiProvider', array(new Reference('civi_flexmailer_api_overrides')));
   }
 
   public static function registerListeners(ContainerAwareEventDispatcher $dispatcher) {
