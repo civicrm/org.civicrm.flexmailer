@@ -2,7 +2,7 @@
 <extension key="org.civicrm.flexmailer" type="module">
   <file>flexmailer</file>
   <name>FlexMailer</name>
-  <description>Extensible email delivery engine for CiviMail</description>
+  <description>Flexible APIs for email delivery</description>
   <license>AGPL-3.0</license>
   <maintainer>
     <author>Tim Otten</author>
@@ -16,6 +16,14 @@
   </urls>
   <releaseDate>2017-03-15</releaseDate>
   <version>0.2-alpha2</version>
+  <comments>
+    FlexMailer is an email delivery engine which replaces the internal guts
+    of CiviMail.  By default, it supports the same delivery algorithms and
+    use-cases as CiviMail, but it also provides more APIs/events for
+    extension-developers.  This enables other extensions to change the
+    template language, tracking codes, delivery mechanism, batching
+    algorithm, and other aspects of delivery. For API details, see the README.md.
+  </comments>
   <compatibility>
     <ver>4.7</ver>
   </compatibility>
