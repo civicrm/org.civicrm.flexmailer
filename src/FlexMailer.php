@@ -230,7 +230,7 @@ class FlexMailer {
     // This isn't a great place for this, but it ensures consistent cleanup.
     $mailing = $this->context['mailing'];
     if (property_exists($mailing, 'language') && $mailing->language && $mailing->language != 'en_US') {
-      $swapLang = \CRM_Utils_AutoClean::swap('global://dbLocale?getter', 'call://i18n/setLocale', $mailing->language);
+      $swapLang = \CRM_Utils_AutoClean::swap('call://i18n/getLocale', 'call://i18n/setLocale', $mailing->language);
     }
 
     $event = new ComposeBatchEvent($this->context, $tasks);
