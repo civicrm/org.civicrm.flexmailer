@@ -1,5 +1,4 @@
-The [`ComposeBatchEvent`](src/Event/ComposeBatchEvent.php) (`EVENT_COMPOSE`) builds the email messages.  Each message
-is represented as a [`FlexMailerTask`](src/FlexMailerTask.php) with a list of [`MailParams`](src/MailParams.php).
+The `ComposeBatchEvent` builds the email messages.  Each message is represented as a `FlexMailerTask` with a list of `MailParams`.
 
 Some listeners are "under the hood" -- they define less visible parts of the message, e.g.
 
@@ -8,8 +7,7 @@ Some listeners are "under the hood" -- they define less visible parts of the mes
  * `OpenTracker` appends an HTML tracking code to any HTML messages.
 
 The heavy-lifting of composing the message content is also handled by a listener, such as
-[`DefaultComposer`](src/Listener/DefaultComposer.php). `DefaultComposer` replicates
-traditional CiviMail functionality:
+`DefaultComposer`. `DefaultComposer` replicates traditional CiviMail functionality:
 
  * Reads email content from `$mailing->body_text` and `$mailing->body_html`.
  * Interprets tokens like `{contact.display_name}` and `{mailing.viewUrl}`.
@@ -49,7 +47,7 @@ function _mustache_compose_batch(\Civi\FlexMailer\Event\ComposeBatchEvent $event
 
 This implementation is naive in a few ways -- it performs separate SQL queries for each recipient; it doesn't optimize
 the template compilation; it has a very limited range of tokens; and it doesn't handle click-through tracking.  For
-more ideas about these issues, review [`DefaultComposer`](src/Listener/DefaultComposer.php).
+more ideas about these issues, review `DefaultComposer`.
 
 > FIXME: Core's `TokenProcessor` is useful for batch-loading token data.
 > However, you currently have to use `addMessage()` and `render()` to kick it

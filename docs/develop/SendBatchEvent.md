@@ -1,7 +1,5 @@
-The [`SendBatchEvent`](src/Event/SendBatchEvent.php) (`EVENT_SEND`) takes a
-batch of recipients and messages, and it delivers the messages.  For
-example, suppose you wanted to replace the built-in delivery mechanism with
-a batch-oriented web-service:
+The `SendBatchEvent` (`EVENT_SEND`) takes a batch of recipients and messages, and it delivers the messages.  For example, suppose you wanted to
+replace the built-in delivery mechanism with a batch-oriented web-service:
 
 ```php
 <?php

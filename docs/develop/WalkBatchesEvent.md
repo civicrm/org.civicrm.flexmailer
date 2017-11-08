@@ -1,6 +1,5 @@
-The [`WalkBatchesEvent`](src/Event/WalkBatchesEvent.php) (`EVENT_WALK`)
-examines the recipient list and pulls out a subset for whom you want to send
-email.  This is useful if you need strategies for chunking-out deliveries.
+The `WalkBatchesEvent` examines the recipient list and pulls out a subset for whom you want to send email.  This is useful if you need strategies for
+chunking-out deliveries.
 
 The basic formula for defining your own batch logic is:
 
