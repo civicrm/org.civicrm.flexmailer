@@ -93,10 +93,10 @@ class FlexMailer {
   const WEIGHT_ALTER = -1000;
   const WEIGHT_END = -2000;
 
-  const EVENT_RUN = 'civi.flexmailer.run';
-  const EVENT_WALK = 'civi.flexmailer.walk';
-  const EVENT_COMPOSE = 'civi.flexmailer.compose';
-  const EVENT_SEND = 'civi.flexmailer.send';
+  const EVENT_RUN = 'hook_civicrm_flexmailer_run';
+  const EVENT_WALK = 'hook_civicrm_flexmailer_walk';
+  const EVENT_COMPOSE = 'hook_civicrm_flexmailer_compose';
+  const EVENT_SEND = 'hook_civicrm_flexmailer_send';
 
   /**
    * @return array

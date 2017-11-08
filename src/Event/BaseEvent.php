@@ -25,12 +25,13 @@
  +--------------------------------------------------------------------+
  */
 namespace Civi\FlexMailer\Event;
+use Civi\Core\Event\GenericHookEvent;
 
 /**
  * Class BaseEvent
  * @package Civi\FlexMailer\Event
  */
-class BaseEvent extends \Symfony\Component\EventDispatcher\Event {
+class BaseEvent extends GenericHookEvent {
   /**
    * @var array
    *   An array which must define options:
@@ -46,6 +47,10 @@ class BaseEvent extends \Symfony\Component\EventDispatcher\Event {
    */
   public function __construct(array $context) {
     $this->context = $context;
+  }
+
+  public function getHookValues() {
+    return array($this);
   }
 
   /**

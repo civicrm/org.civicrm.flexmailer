@@ -23,14 +23,15 @@ the system by adding or overriding listeners.
 
     ```
     $ cv debug:event-dispatcher /flexmail/
-    [Event] civi.flexmailer.walk
+    [Event] hook_civicrm_flexmailer_walk
     +-------+---------------------------------------------------+
     | Order | Callable                                          |
     +-------+---------------------------------------------------+
-    | #1    | Civi\FlexMailer\Listener\DefaultBatcher->onWalk() |
+    | #1    | \Civi\Core\CiviEventDispatcher::delegateToUF()    |
+    | #2    | Civi\FlexMailer\Listener\DefaultBatcher->onWalk() |
     +-------+---------------------------------------------------+
 
-    [Event] civi.flexmailer.compose
+    [Event] hook_civicrm_flexmailer_compose
     +-------+-------------------------------------------------------+
     | Order | Callable                                              |
     +-------+-------------------------------------------------------+
@@ -38,19 +39,35 @@ the system by adding or overriding listeners.
     | #2    | Civi\FlexMailer\Listener\ToHeader->onCompose()        |
     | #3    | Civi\FlexMailer\Listener\BounceTracker->onCompose()   |
     | #4    | Civi\FlexMailer\Listener\DefaultComposer->onCompose() |
-    | #5    | Civi\FlexMailer\Listener\Attachments->onCompose()     |
-    | #6    | Civi\FlexMailer\Listener\OpenTracker->onCompose()     |
-    | #7    | Civi\FlexMailer\Listener\HookAdapter->onCompose()     |
+    | #5    | \Civi\Core\CiviEventDispatcher::delegateToUF()        |
+    | #6    | Civi\FlexMailer\Listener\Attachments->onCompose()     |
+    | #7    | Civi\FlexMailer\Listener\OpenTracker->onCompose()     |
+    | #8    | Civi\FlexMailer\Listener\HookAdapter->onCompose()     |
     +-------+-------------------------------------------------------+
 
-    [Event] civi.flexmailer.send
+    [Event] hook_civicrm_flexmailer_send
     +-------+--------------------------------------------------+
     | Order | Callable                                         |
     +-------+--------------------------------------------------+
-    | #1    | Civi\FlexMailer\Listener\DefaultSender->onSend() |
+    | #1    | \Civi\Core\CiviEventDispatcher::delegateToUF()   |
+    | #2    | Civi\FlexMailer\Listener\DefaultSender->onSend() |
     +-------+--------------------------------------------------+
     ```
 
+!!! note "CMS Hooks"
+    It is *possible* to subscribe to these events in other ways. Note that each event has a listener named `delegateToUF()`
+    which will rebroadcast the event using a Drupal hook, WordPress action, or similar. For example, in a Drupal 7
+    module, one might say:
+
+    ```php
+    <?php
+    function mymodule_civicrm_flexmailer_walk(WalkBatchesEvent $event) { ... }
+    function mymodule_civicrm_flexmailer_compose(ComposeBatchEvent $event) { ... }
+    function mymodule_civicrm_flexmailer_send(SendBatchEvent $event) { ... }
+    ```
+
+    However, it's *strongly recommended* to use Symfony `EventDispatcher` notation with FlexMailer events.  This provides more transparency (via
+    `debug:event-dispatcher`), allows custom weights/priorities, and works intuitively with `stopPropagation()`.
 
 ## Unit tests
 
