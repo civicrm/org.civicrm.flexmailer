@@ -8,9 +8,9 @@
 
 FlexMailer is an *event* based delivery system. It defines three primary events:
 
-* [WalkBatchesEvent](/develop/WalkBatchesEvent.md): In this event, one examines the recipient list and pulls out a subset for whom you want to send email.
-* [ComposeBatchEvent](/develop/ComposeBatchEvent.md): In this event, one examines the mail content and the list of recipients -- then composes a batch of fully-formed email messages.
-* [SendBatchEvent](/develop/SendBatchEvent.md): In this event, one takes a batch of fully-formed email messages and delivers the messages.
+* [WalkBatchesEvent](WalkBatchesEvent.md): In this event, one examines the recipient list and pulls out a subset for whom you want to send email.
+* [ComposeBatchEvent](ComposeBatchEvent.md): In this event, one examines the mail content and the list of recipients -- then composes a batch of fully-formed email messages.
+* [SendBatchEvent](SendBatchEvent.md): In this event, one takes a batch of fully-formed email messages and delivers the messages.
 
 Each event supports a series of listeners.  The default listeners behave in basically the same way as CiviMail's traditional BAO-based delivery
 system (respecting `mailerJobSize`, `mailThrottleTime`, `mailing_backend`, `hook_civicrm_alterMailParams`, etal).  However, you can customize
