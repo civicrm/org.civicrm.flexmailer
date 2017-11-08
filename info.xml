@@ -18,11 +18,8 @@
   <version>0.2-alpha2</version>
   <comments>
     FlexMailer is an email delivery engine which replaces the internal guts
-    of CiviMail.  By default, it supports the same delivery algorithms and
-    use-cases as CiviMail, but it also provides more APIs/events for
-    extension-developers.  This enables other extensions to change the
-    template language, tracking codes, delivery mechanism, batching
-    algorithm, and other aspects of delivery. For API details, see the README.md.
+    of CiviMail.  It is a drop-in replacement which enables *other* extensions
+    to provide richer email features.
   </comments>
   <compatibility>
     <ver>4.7</ver>
