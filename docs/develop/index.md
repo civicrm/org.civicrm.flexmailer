@@ -1,3 +1,11 @@
+## Unit tests
+
+The headless unit tests are based on `phpunit4` and `cv`. Simply run:
+
+```
+$ phpunit4
+```
+
 ## Events
 
 !!! tip "Symfony Events"
@@ -50,12 +58,3 @@ the system by adding or overriding listeners.
     | #1    | Civi\FlexMailer\Listener\DefaultSender->onSend() |
     +-------+--------------------------------------------------+
     ```
-
-
-## Unit tests
-
-The headless unit tests are based on `phpunit4` and `cv`. Simply run:
-
-```
-$ phpunit4
-```
