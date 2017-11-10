@@ -46,7 +46,7 @@ class Services {
     }
 
     $container->setDefinition('civi_flexmailer_api_overrides', new Definition('Civi\API\Provider\ProviderInterface'))
-      ->setFactoryClass(__CLASS__)->setFactoryMethod('createApiOverrides');
+      ->setFactory(array(__CLASS__, 'createApiOverrides'));
 
     $container->setDefinition('civi_flexmailer_abdicator', new Definition('Civi\FlexMailer\Listener\Abdicator'));
     $container->setDefinition('civi_flexmailer_default_batcher', new Definition('Civi\FlexMailer\Listener\DefaultBatcher'));
