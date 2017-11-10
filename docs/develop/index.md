@@ -20,41 +20,87 @@ FlexMailer is an *event* based delivery system. It defines three primary events:
 * [ComposeBatchEvent](ComposeBatchEvent.md): In this event, one examines the mail content and the list of recipients -- then composes a batch of fully-formed email messages.
 * [SendBatchEvent](SendBatchEvent.md): In this event, one takes a batch of fully-formed email messages and delivers the messages.
 
-Each event supports a series of listeners.  The default listeners behave in basically the same way as CiviMail's traditional BAO-based delivery
-system (respecting `mailerJobSize`, `mailThrottleTime`, `mailing_backend`, `hook_civicrm_alterMailParams`, etal).  However, you can customize
-the system by adding or overriding listeners.
+These events are not conceived in the same way as a typical *CiviCRM hook*; rather, they resemble *pipelines*.  For each event, several listeners
+have an opportunity to weigh-in, and the *order* of the listeners is important.  As such, it helps to *inspect* the list of listeners.  You can do
+this with the CLI command, `cv`:
 
-!!! tip "Debugging"
+```
+$ cv debug:event-dispatcher /flexmail/
+[Event] civi.flexmailer.walk
++-------+---------------------------------------------------+
+| Order | Callable                                          |
++-------+---------------------------------------------------+
+| #1    | Civi\FlexMailer\Listener\DefaultBatcher->onWalk() |
++-------+---------------------------------------------------+
 
-    When dealing with events and listeners, a fundamental question is: "What listeners are active?  When do they fire?" Answer this using the
-    command `cv debug:event-dispatcher`.  For example, at time of writing, these are the default listeners:
+[Event] civi.flexmailer.compose
++-------+-------------------------------------------------------+
+| Order | Callable                                              |
++-------+-------------------------------------------------------+
+| #1    | Civi\FlexMailer\Listener\BasicHeaders->onCompose()    |
+| #2    | Civi\FlexMailer\Listener\ToHeader->onCompose()        |
+| #3    | Civi\FlexMailer\Listener\BounceTracker->onCompose()   |
+| #4    | Civi\FlexMailer\Listener\DefaultComposer->onCompose() |
+| #5    | Civi\FlexMailer\Listener\Attachments->onCompose()     |
+| #6    | Civi\FlexMailer\Listener\OpenTracker->onCompose()     |
+| #7    | Civi\FlexMailer\Listener\HookAdapter->onCompose()     |
++-------+-------------------------------------------------------+
 
+[Event] civi.flexmailer.send
++-------+--------------------------------------------------+
+| Order | Callable                                         |
++-------+--------------------------------------------------+
+| #1    | Civi\FlexMailer\Listener\DefaultSender->onSend() |
++-------+--------------------------------------------------+
+```
+
+The above listing shows the default set of listeners at time of writing. (Run the command yourself to see how they appear on your system.)
+The default listeners behave in basically the same way as CiviMail's traditional BAO-based delivery system (respecting `mailerJobSize`,
+`mailThrottleTime`, `mailing_backend`, `hook_civicrm_alterMailParams`, etal).
+
+There are a few tricks for manipulating the pipeline:
+
+* __Register new listeners__. Each event has its own documentation which describes how to do this.
+* __Manage the priority__. When registering a listener, the `addListener()` function accepts a `$priority` integer. Use this to move up or down the pipeline.
+
+    !!! note "Priority vs Order"
+
+        When writing code, you will set the *priority* of a listener. The default is `0`, and the usual range is `2000` (first) to `-2000` (last).
+
+        <!-- The default listeners have priorities based on the constants `FlexMailer::WEIGHT_PREPARE` (1000), `FlexMailer::WEIGHT_MAIN` (0),
+        `FlexMailer::WEIGHT_ALTER` (-1000), and `FlexMailer::WEIGHT_END` (-2000). -->
+
+        At runtime, the `EventDispatcher` will take all the listeners and sort them by priority. This produces the *order*, which simply counts up (`1`, `2`, `3`, ...).
+
+* __Alter a listener__. Most listeners are *services*, and you can manipulate options on these services. For example, suppose you wanted to replace the default bounce-tracking mechanism.
+  Here's a simple way to disable the default `BounceTracker`:
+
+    ```php
+    <?php
+    \Civi::service('civi_flexmailer_bounce_tracker')->setActive(FALSE);
     ```
-    $ cv debug:event-dispatcher /flexmail/
-    [Event] civi.flexmailer.walk
-    +-------+---------------------------------------------------+
-    | Order | Callable                                          |
-    +-------+---------------------------------------------------+
-    | #1    | Civi\FlexMailer\Listener\DefaultBatcher->onWalk() |
-    +-------+---------------------------------------------------+
 
-    [Event] civi.flexmailer.compose
-    +-------+-------------------------------------------------------+
-    | Order | Callable                                              |
-    +-------+-------------------------------------------------------+
-    | #1    | Civi\FlexMailer\Listener\BasicHeaders->onCompose()    |
-    | #2    | Civi\FlexMailer\Listener\ToHeader->onCompose()        |
-    | #3    | Civi\FlexMailer\Listener\BounceTracker->onCompose()   |
-    | #4    | Civi\FlexMailer\Listener\DefaultComposer->onCompose() |
-    | #5    | Civi\FlexMailer\Listener\Attachments->onCompose()     |
-    | #6    | Civi\FlexMailer\Listener\OpenTracker->onCompose()     |
-    | #7    | Civi\FlexMailer\Listener\HookAdapter->onCompose()     |
-    +-------+-------------------------------------------------------+
+    Of course, this change needs to be made before the listener runs. You might do use a global hook (like `hook_civicrm_config`), or you might
+    have your own listener adds its own bounce-tracking and disable the default.
 
-    [Event] civi.flexmailer.send
-    +-------+--------------------------------------------------+
-    | Order | Callable                                         |
-    +-------+--------------------------------------------------+
-    | #1    | Civi\FlexMailer\Listener\DefaultSender->onSend() |
-    +-------+--------------------------------------------------+
-    ```
+
+## Services
+
+Most features in FlexMailer are implemented by *services*, and you can override or manipulate these features if understand the corresponding service.
+
+* Listener services (`WalkBatchesEvent`)
+     * `civi_flexmailer_default_batcher` (`DefaultBatcher.php`): Split the recipient list into smaller batches (per CiviMail settings)
+* Listener services (`ComposeBatchEvent`)
+     * `civi_flexmailer_basic_headers` (`BasicHeaders.php`): Add `From:`, `Reply-To:`, etc
+     * `civi_flexmailer_to_header` (`ToHeader.php`): Add `To:` header
+     * `civi_flexmailer_bounce_tracker` (`BounceTracker.php`): Add bounce-tracking codes
+     * `civi_flexmailer_default_composer` (`DefaultComposer.php`): Read the email template and evaluate any tokens (based on CiviMail tokens)
+     * `civi_flexmailer_attachments` (`Attachments.php`): Add attachments
+     * `civi_flexmailer_open_tracker` (`OpenTracker.php`): Add open-tracking codes
+     * `civi_flexmailer_hooks` (`HookAdapter.php`): Backward compatibility with `hook_civicrm_alterMailParams`
+* Listener services (`SendBatchEvent`)
+     * `civi_flexmailer_default_sender` (`DefaultSender.php`): Send the batch using CiviCRM's default delivery service
+* Other services
+     * `civi_flexmailer_html_click_tracker` (`HtmlClickTracker.php`): Add click-tracking codes (for HTML messages)
+     * `civi_flexmailer_text_click_tracker` (`TextClickTracker.php`): Add click-tracking codes (for plain-text messages)
+     * `civi_flexmailer_api_overrides` (`Services.php.php`): Alter the `Mailing` APIs
