@@ -80,13 +80,13 @@ There are a few tricks for manipulating the pipeline:
     \Civi::service('civi_flexmailer_bounce_tracker')->setActive(FALSE);
     ```
 
-    Of course, this change needs to be made before the listener runs. You might do use a global hook (like `hook_civicrm_config`), or you might
-    have your own listener adds its own bounce-tracking and disable the default.
+    Of course, this change needs to be made before the listener runs. You might use a global hook (like `hook_civicrm_config`), or you might
+    have your own listener which disables `civi_flexmailer_bounce_tracker` and adds its own bounce-tracking.
 
 
 ## Services
 
-Most features in FlexMailer are implemented by *services*, and you can override or manipulate these features if understand the corresponding service.
+Most features in FlexMailer are implemented by *services*, and you can override or manipulate these features if you understand the corresponding service.
 
 * Listener services (`WalkBatchesEvent`)
      * `civi_flexmailer_default_batcher` (`DefaultBatcher.php`): Split the recipient list into smaller batches (per CiviMail settings)
