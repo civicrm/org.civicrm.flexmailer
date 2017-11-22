@@ -49,6 +49,7 @@ class Services {
       ->setFactory(array(__CLASS__, 'createApiOverrides'));
 
     $container->setDefinition('civi_flexmailer_required_fields', new Definition('Civi\FlexMailer\Listener\RequiredFields'));
+    $container->setDefinition('civi_flexmailer_required_tokens', new Definition('Civi\FlexMailer\Listener\RequiredTokens'));
 
     $container->setDefinition('civi_flexmailer_abdicator', new Definition('Civi\FlexMailer\Listener\Abdicator'));
     $container->setDefinition('civi_flexmailer_default_batcher', new Definition('Civi\FlexMailer\Listener\DefaultBatcher'));
@@ -91,7 +92,8 @@ class Services {
   protected static function getListenerSpecs() {
     $listenerSpecs = array();
 
-    $listenerSpecs[] = array(Validator::EVENT_CHECK_SENDABLE, array('civi_flexmailer_required_fields', 'onCheckSendable'), FM::WEIGHT_PREPARE);
+    $listenerSpecs[] = array(Validator::EVENT_CHECK_SENDABLE, array('civi_flexmailer_required_fields', 'onCheckSendable'), FM::WEIGHT_MAIN);
+    $listenerSpecs[] = array(Validator::EVENT_CHECK_SENDABLE, array('civi_flexmailer_required_tokens', 'onCheckSendable'), FM::WEIGHT_MAIN);
 
     $listenerSpecs[] = array(FM::EVENT_RUN, array('civi_flexmailer_default_composer', 'onRun'), FM::WEIGHT_MAIN);
     $listenerSpecs[] = array(FM::EVENT_RUN, array('civi_flexmailer_abdicator', 'onRun'), FM::WEIGHT_END);
