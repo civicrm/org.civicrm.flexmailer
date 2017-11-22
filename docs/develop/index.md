@@ -14,8 +14,9 @@ $ phpunit4
     If this is unfamiliar, you can read [a general introduction to Symfony events](http://symfony.com/doc/2.7/components/event_dispatcher.html)
     or [a specific introduction about CiviCRM and Symfony events](https://docs.civicrm.org/dev/en/latest/hooks/setup/symfony/).
 
-FlexMailer is an *event* based delivery system. It defines three primary events:
+FlexMailer is an *event* based delivery system. It defines a few events:
 
+* [CheckSendableEvent](CheckSendableEvent.md): In this event, one examines a draft mailing to determine if it is complete enough to deliver.
 * [WalkBatchesEvent](WalkBatchesEvent.md): In this event, one examines the recipient list and pulls out a subset for whom you want to send email.
 * [ComposeBatchEvent](ComposeBatchEvent.md): In this event, one examines the mail content and the list of recipients -- then composes a batch of fully-formed email messages.
 * [SendBatchEvent](SendBatchEvent.md): In this event, one takes a batch of fully-formed email messages and delivers the messages.
@@ -26,6 +27,14 @@ this with the CLI command, `cv`:
 
 ```
 $ cv debug:event-dispatcher /flexmail/
+[Event] civi.flexmailer.checkSendable
++-------+------------------------------------------------------------+
+| Order | Callable                                                   |
++-------+------------------------------------------------------------+
+| #1    | Civi\FlexMailer\Listener\RequiredFields->onCheckSendable() |
+| #2    | Civi\FlexMailer\Listener\RequiredTokens->onCheckSendable() |
++-------+------------------------------------------------------------+
+
 [Event] civi.flexmailer.walk
 +-------+---------------------------------------------------+
 | Order | Callable                                          |
@@ -88,6 +97,9 @@ There are a few tricks for manipulating the pipeline:
 
 Most features in FlexMailer are implemented by *services*, and you can override or manipulate these features if you understand the corresponding service.
 
+* Listener services (`CheckSendableEvent`)
+     * `civi_flexmailer_required_fields` (`RequiredFields.php`): Check for fields like "Subject" and "From".
+     * `civi_flexmailer_required_tokens` (`RequiredTokens.php`): Check for tokens like `{action.unsubscribeUrl}` (in `traditional` mailings).
 * Listener services (`WalkBatchesEvent`)
      * `civi_flexmailer_default_batcher` (`DefaultBatcher.php`): Split the recipient list into smaller batches (per CiviMail settings)
 * Listener services (`ComposeBatchEvent`)

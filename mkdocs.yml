@@ -7,6 +7,7 @@ pages:
 - Installation: install.md
 - Development:
   - Overview: develop/index.md
+  - CheckSendableEvent: develop/CheckSendableEvent.md
   - WalkBatchesEvent: develop/WalkBatchesEvent.md
   - ComposeBatchEvent: develop/ComposeBatchEvent.md
   - SendBatchEvent: develop/SendBatchEvent.md
