@@ -92,10 +92,25 @@ There are a few tricks for manipulating the pipeline:
     Of course, this change needs to be made before the listener runs. You might use a global hook (like `hook_civicrm_config`), or you might
     have your own listener which disables `civi_flexmailer_bounce_tracker` and adds its own bounce-tracking.
 
+    Most FlexMailer services support `setActive()`, which enables you to completely replace them.
+
+    Additionally, some services have their own richer methods. In this example, we modify the list of required tokens:
+
+    ```php
+    <?php
+    $tokens = \Civi::service('civi_flexmailer_required_tokens')
+      ->getRequiredTokens();
+
+    unset($tokens['domain.address']);
+
+    \Civi::service('civi_flexmailer_required_tokens')
+      ->setRequiredTokens($tokens);
+    ```
 
 ## Services
 
 Most features in FlexMailer are implemented by *services*, and you can override or manipulate these features if you understand the corresponding service.
+For more detailed information about how to manipulate a service, consult its docblocks.
 
 * Listener services (`CheckSendableEvent`)
      * `civi_flexmailer_required_fields` (`RequiredFields.php`): Check for fields like "Subject" and "From".
