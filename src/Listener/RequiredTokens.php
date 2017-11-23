@@ -39,6 +39,8 @@ use Civi\FlexMailer\Event\CheckSendableEvent;
  */
 class RequiredTokens extends BaseListener {
 
+  private $requiredTokens;
+
   /**
    * @var array
    *
@@ -52,6 +54,15 @@ class RequiredTokens extends BaseListener {
    */
   public function __construct() {
     $this->templateTypes = array('traditional');
+    $this->requiredTokens = array(
+      'domain.address' => ts("Domain address - displays your organization's postal address."),
+      'action.optOutUrl or action.unsubscribeUrl' => array(
+        'action.optOut' => ts("'Opt out via email' - displays an email address for recipients to opt out of receiving emails from your organization."),
+        'action.optOutUrl' => ts("'Opt out via web page' - creates a link for recipients to click if they want to opt out of receiving emails from your organization. Alternatively, you can include the 'Opt out via email' token."),
+        'action.unsubscribe' => ts("'Unsubscribe via email' - displays an email address for recipients to unsubscribe from the specific mailing list used to send this message."),
+        'action.unsubscribeUrl' => ts("'Unsubscribe via web page' - creates a link for recipients to unsubscribe from the specific mailing list used to send this message. Alternatively, you can include the 'Unsubscribe via email' token or one of the Opt-out tokens."),
+      ),
+    );
   }
 
   /**
@@ -75,15 +86,51 @@ class RequiredTokens extends BaseListener {
       if (empty($str)) {
         continue;
       }
-      $err = \CRM_Utils_Token::requiredTokens($str);
-      if ($err !== TRUE) {
-        foreach ($err as $token => $desc) {
-          $e->setError("{$field}:{$token}", E::ts('This message is missing a required token - {%1}: %2',
-            array(1 => $token, 2 => $desc)
-          ));
+      foreach ($this->findMissingTokens($str) as $token => $desc) {
+        $e->setError("{$field}:{$token}", E::ts('This message is missing a required token - {%1}: %2',
+          array(1 => $token, 2 => $desc)
+        ));
+      }
+    }
+  }
+
+  public function findMissingTokens($str) {
+    $missing = array();
+    foreach ($this->getRequiredTokens() as $token => $value) {
+      if (!is_array($value)) {
+        if (!preg_match('/(^|[^\{])' . preg_quote('{' . $token . '}') . '/', $str)) {
+          $missing[$token] = $value;
+        }
+      }
+      else {
+        $present = FALSE;
+        $desc = NULL;
+        foreach ($value as $t => $d) {
+          $desc = $d;
+          if (preg_match('/(^|[^\{])' . preg_quote('{' . $t . '}') . '/', $str)) {
+            $present = TRUE;
+          }
+        }
+        if (!$present) {
+          $missing[$token] = $desc;
         }
       }
     }
+    return $missing;
+  }
+
+  /**
+   * @return array
+   */
+  public function getRequiredTokens() {
+    return $this->requiredTokens;
+  }
+
+  /**
+   * @param array $requiredTokens
+   */
+  public function setRequiredTokens($requiredTokens) {
+    $this->requiredTokens = $requiredTokens;
   }
 
   /**
