@@ -79,8 +79,8 @@ class ValidatorTest extends \CiviUnitTestCase {
     $es[] = array(
       array_merge($defaults, array('body_html' => 'Muahaha. I omit the mandatory tokens!')),
       array(
-        'body_html:domain.address'  => '/This message is missing/',
-        'body_html:action.optOutUrl or action.unsubscribeUrl' => '/This message is missing/',
+        'body_html:domain.address'  => '/This message is missing.*postal address/',
+        'body_html:action.optOutUrl or action.unsubscribeUrl' => '/This message is missing.*Unsubscribe via web page/',
       ),
     );
     $es[] = array(
