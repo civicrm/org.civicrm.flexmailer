@@ -29,15 +29,27 @@ namespace Civi\FlexMailer\Listener;
 use CRM_Flexmailer_ExtensionUtil as E;
 use Civi\FlexMailer\Event\CheckSendableEvent;
 
+/**
+ * Class RequiredFields
+ * @package Civi\FlexMailer\Listener
+ *
+ * The RequiredFields listener checks that all mandatory fields have a value.
+ */
 class RequiredFields extends BaseListener {
 
-  private $fields = array(
-    'subject',
-    'name',
-    'from_name',
-    'from_email',
-    '(body_html|body_text)',
-  );
+  /**
+   * @var array
+   *   Ex: array('subject', 'from_name', '(body_html|body_text)').
+   */
+  private $fields;
+
+  /**
+   * RequiredFields constructor.
+   * @param array $fields
+   */
+  public function __construct( $fields) {
+    $this->fields = $fields;
+  }
 
   /**
    * Check for required fields.
@@ -50,6 +62,7 @@ class RequiredFields extends BaseListener {
     }
 
     foreach ($this->fields as $field) {
+      // Parentheses indicate multiple options. Ex: '(body_html|body_text)'
       if ($field{0} === '(') {
         $alternatives = explode('|', substr($field, 1, -1));
         $fieldTitle = implode(' or ', array_map(function ($x) {
@@ -72,17 +85,41 @@ class RequiredFields extends BaseListener {
   }
 
   /**
-   * @param $mailing
-   * @param $alternatives
+   * Determine if $object has any of the given properties.
+   *
+   * @param mixed $object
+   * @param array $alternatives
    * @return bool
    */
-  protected function hasAny($mailing, $alternatives) {
+  protected function hasAny($object, $alternatives) {
     foreach ($alternatives as $alternative) {
-      if (!empty($mailing->{$alternative})) {
+      if (!empty($object->{$alternative})) {
         return TRUE;
       }
     }
     return FALSE;
+  }
+
+  /**
+   * Get the list of required fields.
+   *
+   * @return array
+   *   Ex: array('subject', 'from_name', '(body_html|body_text)').
+   */
+  public function getFields() {
+    return $this->fields;
+  }
+
+  /**
+   * Set the list of required fields.
+   *
+   * @param array $fields
+   *   Ex: array('subject', 'from_name', '(body_html|body_text)').
+   * @return RequiredFields
+   */
+  public function setFields($fields) {
+    $this->fields = $fields;
+    return $this;
   }
 
 }

@@ -48,8 +48,27 @@ class Services {
     $container->setDefinition('civi_flexmailer_api_overrides', new Definition('Civi\API\Provider\ProviderInterface'))
       ->setFactory(array(__CLASS__, 'createApiOverrides'));
 
-    $container->setDefinition('civi_flexmailer_required_fields', new Definition('Civi\FlexMailer\Listener\RequiredFields'));
-    $container->setDefinition('civi_flexmailer_required_tokens', new Definition('Civi\FlexMailer\Listener\RequiredTokens'));
+    $container->setDefinition('civi_flexmailer_required_fields', new Definition('Civi\FlexMailer\Listener\RequiredFields', array(
+      array(
+        'subject',
+        'name',
+        'from_name',
+        'from_email',
+        '(body_html|body_text)',
+      ),
+    )));
+    $container->setDefinition('civi_flexmailer_required_tokens', new Definition('Civi\FlexMailer\Listener\RequiredTokens', array(
+      array('traditional'),
+      array(
+        'domain.address' => ts("Domain address - displays your organization's postal address."),
+        'action.optOutUrl or action.unsubscribeUrl' => array(
+          'action.optOut' => ts("'Opt out via email' - displays an email address for recipients to opt out of receiving emails from your organization."),
+          'action.optOutUrl' => ts("'Opt out via web page' - creates a link for recipients to click if they want to opt out of receiving emails from your organization. Alternatively, you can include the 'Opt out via email' token."),
+          'action.unsubscribe' => ts("'Unsubscribe via email' - displays an email address for recipients to unsubscribe from the specific mailing list used to send this message."),
+          'action.unsubscribeUrl' => ts("'Unsubscribe via web page' - creates a link for recipients to unsubscribe from the specific mailing list used to send this message. Alternatively, you can include the 'Unsubscribe via email' token or one of the Opt-out tokens."),
+        ),
+      ),
+    )));
 
     $container->setDefinition('civi_flexmailer_abdicator', new Definition('Civi\FlexMailer\Listener\Abdicator'));
     $container->setDefinition('civi_flexmailer_default_batcher', new Definition('Civi\FlexMailer\Listener\DefaultBatcher'));

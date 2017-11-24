@@ -39,6 +39,10 @@ use Civi\FlexMailer\Event\CheckSendableEvent;
  */
 class RequiredTokens extends BaseListener {
 
+  /**
+   * @var array
+   *   Ex: array('domain.address' => ts('The organizational postal address'))
+   */
   private $requiredTokens;
 
   /**
@@ -51,18 +55,15 @@ class RequiredTokens extends BaseListener {
 
   /**
    * RequiredTokens constructor.
+   *
+   * @param array $templateTypes
+   *   Ex: array('traditional').
+   * @param array $requiredTokens
+   *   Ex: array('domain.address' => ts('The organizational postal address'))
    */
-  public function __construct() {
-    $this->templateTypes = array('traditional');
-    $this->requiredTokens = array(
-      'domain.address' => ts("Domain address - displays your organization's postal address."),
-      'action.optOutUrl or action.unsubscribeUrl' => array(
-        'action.optOut' => ts("'Opt out via email' - displays an email address for recipients to opt out of receiving emails from your organization."),
-        'action.optOutUrl' => ts("'Opt out via web page' - creates a link for recipients to click if they want to opt out of receiving emails from your organization. Alternatively, you can include the 'Opt out via email' token."),
-        'action.unsubscribe' => ts("'Unsubscribe via email' - displays an email address for recipients to unsubscribe from the specific mailing list used to send this message."),
-        'action.unsubscribeUrl' => ts("'Unsubscribe via web page' - creates a link for recipients to unsubscribe from the specific mailing list used to send this message. Alternatively, you can include the 'Unsubscribe via email' token or one of the Opt-out tokens."),
-      ),
-    );
+  public function __construct($templateTypes, $requiredTokens) {
+    $this->templateTypes = $templateTypes;
+    $this->requiredTokens = $requiredTokens;
   }
 
   /**
@@ -121,6 +122,7 @@ class RequiredTokens extends BaseListener {
 
   /**
    * @return array
+   *   Ex: array('domain.address' => ts('The organizational postal address'))
    */
   public function getRequiredTokens() {
     return $this->requiredTokens;
@@ -128,9 +130,12 @@ class RequiredTokens extends BaseListener {
 
   /**
    * @param array $requiredTokens
+   *   Ex: array('domain.address' => ts('The organizational postal address'))
+   * @return RequiredTokens
    */
   public function setRequiredTokens($requiredTokens) {
     $this->requiredTokens = $requiredTokens;
+    return $this;
   }
 
   /**
