@@ -7,6 +7,8 @@
  */
 
 define('CIVICRM_FLEXMAILER_HACK_DELIVER', '\Civi\FlexMailer\FlexMailer::createAndRun');
+define('CIVICRM_FLEXMAILER_HACK_SENDABLE', '\Civi\FlexMailer\Validator::createAndRun');
+define('CIVICRM_FLEXMAILER_HACK_REQUIRED_TOKENS', 'call://civi_flexmailer_required_tokens/getRequiredTokens');
 //define('CIVICRM_FLEXMAILER_HACK_SERVICES', '\Civi\FlexMailer\Services::registerServices');
 //define('CIVICRM_FLEXMAILER_HACK_LISTENERS', '\Civi\FlexMailer\Services::registerListeners');
 

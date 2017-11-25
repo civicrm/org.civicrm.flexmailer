@@ -6,6 +6,7 @@ drop-in replacement which enables *other* extensions to provide richer email fea
 * [Introduction](docs/index.md)
 * [Installation](docs/install.md)
 * [Development](docs/develop/index.md)
+    * [CheckSendableEvent](docs/develop/CheckSendableEvent.md)
     * [WalkBatchesEvent](docs/develop/WalkBatchesEvent.md)
     * [ComposeBatchEvent](docs/develop/ComposeBatchEvent.md)
     * [SendBatchEvent](docs/develop/SendBatchEvent.md)
