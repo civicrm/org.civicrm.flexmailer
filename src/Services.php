@@ -45,8 +45,8 @@ class Services {
       $container->addResource(new \Symfony\Component\Config\Resource\FileResource(__FILE__));
     }
 
-    $container->setDefinition('civi_flexmailer_api_overrides', new Definition('Civi\API\Provider\ProviderInterface'))
-      ->setFactory(array(__CLASS__, 'createApiOverrides'));
+    $apiOverrides = $container->setDefinition('civi_flexmailer_api_overrides', new Definition('Civi\API\Provider\ProviderInterface'));
+    self::applyStaticFactory($apiOverrides, __CLASS__, 'createApiOverrides');
 
     $container->setDefinition('civi_flexmailer_required_fields', new Definition('Civi\FlexMailer\Listener\RequiredFields', array(
       array(
@@ -142,6 +142,25 @@ class Services {
     // FIXME: stay in sync with upstream perms
     $provider->addAction('preview', 'access CiviMail', '\Civi\FlexMailer\API\MailingPreview::preview');
     return $provider;
+  }
+
+  /**
+   * Adapter for using factory methods in old+new versions of Symfony.
+   *
+   * @param \Symfony\Component\DependencyInjection\Definition $def
+   * @param string $factoryClass
+   * @param string $factoryMethod
+   * @return \Symfony\Component\DependencyInjection\Definition
+   * @deprecated
+   */
+  protected static function applyStaticFactory($def, $factoryClass, $factoryMethod) {
+    if (method_exists($def, 'setFactory')) {
+      $def->setFactory(array($factoryClass, $factoryMethod));
+    }
+    else {
+      $def->setFactoryClass($factoryClass)->setFactoryMethod($factoryMethod);
+    }
+    return $def;
   }
 
 }
