@@ -78,7 +78,7 @@ class RequiredTokens extends BaseListener {
     if (\Civi::settings()->get('disable_mandatory_tokens_check')) {
       return;
     }
-    if (!in_array($e->getMailing()->template_type, $this->templateTypes)) {
+    if (!in_array($e->getMailing()->template_type, $this->getTemplateTypes())) {
       return;
     }
 
