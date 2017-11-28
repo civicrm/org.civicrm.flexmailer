@@ -111,6 +111,7 @@ class Services {
   protected static function getListenerSpecs() {
     $listenerSpecs = array();
 
+    $listenerSpecs[] = array(Validator::EVENT_CHECK_SENDABLE, array('civi_flexmailer_abdicator', 'onCheckSendable'), FM::WEIGHT_START);
     $listenerSpecs[] = array(Validator::EVENT_CHECK_SENDABLE, array('civi_flexmailer_required_fields', 'onCheckSendable'), FM::WEIGHT_MAIN);
     $listenerSpecs[] = array(Validator::EVENT_CHECK_SENDABLE, array('civi_flexmailer_required_tokens', 'onCheckSendable'), FM::WEIGHT_MAIN);
 
