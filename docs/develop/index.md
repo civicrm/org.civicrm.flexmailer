@@ -31,8 +31,9 @@ $ cv debug:event-dispatcher /flexmail/
 +-------+------------------------------------------------------------+
 | Order | Callable                                                   |
 +-------+------------------------------------------------------------+
-| #1    | Civi\FlexMailer\Listener\RequiredFields->onCheckSendable() |
-| #2    | Civi\FlexMailer\Listener\RequiredTokens->onCheckSendable() |
+| #1    | Civi\FlexMailer\Listener\Abdicator->onCheckSendable()      |
+| #2    | Civi\FlexMailer\Listener\RequiredFields->onCheckSendable() |
+| #3    | Civi\FlexMailer\Listener\RequiredTokens->onCheckSendable() |
 +-------+------------------------------------------------------------+
 
 [Event] civi.flexmailer.walk

@@ -88,6 +88,7 @@ use \Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class FlexMailer {
 
+  const WEIGHT_START = 2000;
   const WEIGHT_PREPARE = 1000;
   const WEIGHT_MAIN = 0;
   const WEIGHT_ALTER = -1000;

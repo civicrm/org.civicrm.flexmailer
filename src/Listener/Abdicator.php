@@ -28,6 +28,17 @@ namespace Civi\FlexMailer\Listener;
 
 use Civi\FlexMailer\Event\RunEvent;
 
+/**
+ * Class Abdicator
+ * @package Civi\FlexMailer\Listener
+ *
+ * FlexMailer is in incubation -- it's a heavily reorganized version
+ * of the old MailingJob::deliver*() functions. It hasn't been tested as
+ * thoroughly and may not have perfect parity.
+ *
+ * During incubation, we want to mostly step-aside -- for traditional
+ * mailings, simply continue using the old system.
+ */
 class Abdicator {
 
   /**
@@ -51,14 +62,7 @@ class Abdicator {
   }
 
   /**
-   * Abdicate; defer to the old system.
-   *
-   * The FlexMailer is in incubation -- it's a heavily reorganized version
-   * of the old MailingJob::deliver*() functions. It hasn't been tested as
-   * thoroughly and may not have perfect parity.
-   *
-   * During incubation, we want to mostly step-aside -- instead,
-   * simply continue using the old system.
+   * Abdicate; defer to the old system during delivery.
    *
    * @param \Civi\FlexMailer\Event\RunEvent $e
    */
@@ -74,6 +78,25 @@ class Abdicator {
       $e->context['deprecatedTestParams']
     );
     $e->setCompleted($isDelivered);
+  }
+
+  /**
+   * Abdicate; defer to the old system when checking completeness.
+   *
+   * @param \Civi\FlexMailer\Event\CheckSendableEvent $e
+   */
+  public function onCheckSendable($e) {
+    if (self::isFlexmailPreferred($e->getMailing())) {
+      return; // OK, we'll continue running.
+    }
+
+    $e->stopPropagation();
+    $errors = \CRM_Mailing_BAO_Mailing::checkSendable($e->getMailing());
+    if (is_array($errors)) {
+      foreach ($errors as $key => $message) {
+        $e->setError($key, $message);;
+      }
+    }
   }
 
 }
