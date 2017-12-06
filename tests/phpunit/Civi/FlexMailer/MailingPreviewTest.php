@@ -1,6 +1,11 @@
 <?php
 namespace Civi\FlexMailer;
 
+/**
+ * Class MailingPreviewTest
+ *
+ * @group headless
+ */
 class MailingPreviewTest extends \CiviUnitTestCase {
 
   protected $_groupID;

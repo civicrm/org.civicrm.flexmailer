@@ -26,6 +26,11 @@
  */
 namespace Civi\FlexMailer;
 
+/**
+ * Class ValidatorTest
+ *
+ * @group headless
+ */
 class ValidatorTest extends \CiviUnitTestCase {
 
   public function setUp() {
