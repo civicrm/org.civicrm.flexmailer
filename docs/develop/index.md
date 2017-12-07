@@ -17,6 +17,7 @@ $ phpunit4
 FlexMailer is an *event* based delivery system. It defines a few events:
 
 * [CheckSendableEvent](CheckSendableEvent.md): In this event, one examines a draft mailing to determine if it is complete enough to deliver.
+* [RunEvent](RunEvent.md): When a cron-worker starts processing a `MailingJob`, this event fires. It can be used to initialize resources... or to completely circumvent the normal process.
 * [WalkBatchesEvent](WalkBatchesEvent.md): In this event, one examines the recipient list and pulls out a subset for whom you want to send email.
 * [ComposeBatchEvent](ComposeBatchEvent.md): In this event, one examines the mail content and the list of recipients -- then composes a batch of fully-formed email messages.
 * [SendBatchEvent](SendBatchEvent.md): In this event, one takes a batch of fully-formed email messages and delivers the messages.
