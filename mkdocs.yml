@@ -8,6 +8,7 @@ pages:
 - Development:
   - Overview: develop/index.md
   - CheckSendableEvent: develop/CheckSendableEvent.md
+  - RunEvent: develop/RunEvent.md
   - WalkBatchesEvent: develop/WalkBatchesEvent.md
   - ComposeBatchEvent: develop/ComposeBatchEvent.md
   - SendBatchEvent: develop/SendBatchEvent.md
