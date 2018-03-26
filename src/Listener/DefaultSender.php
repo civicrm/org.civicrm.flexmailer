@@ -58,6 +58,7 @@ class DefaultSender extends BaseListener {
 
     $targetParams = $deliveredParams = array();
     $count = 0;
+    $retryBatch = FALSE;
 
     foreach ($e->getTasks() as $key => $task) {
       /** @var FlexMailerTask $task */
@@ -92,18 +93,27 @@ class DefaultSender extends BaseListener {
         /** @var \PEAR_Error $result */
         // CRM-9191
         $message = $result->getMessage();
+        // SMTP response code is buried in the message.
+        $code = preg_match('/ \(code: (.+), response: /', $message, $matches) ? $matches[1] : '';
         if (
           strpos($message, 'Failed to write to socket') !== FALSE ||
-          strpos($message, 'Failed to set sender') !== FALSE
+          ((
+            strpos($message, 'Failed to set sender') !== FALSE ||
+            strpos($message, 'Failed to add recipient') !== FALSE ||
+            strpos($message, 'Failed to send data') !== FALSE
+          // Register 5xx SMTP response code (permanent failure) as bounce.
+          ) && substr($code, 0, 1) !== '5')
         ) {
           // lets log this message and code
           $code = $result->getCode();
           \CRM_Core_Error::debug_log_message("SMTP Socket Error or failed to set sender error. Message: $message, Code: $code");
 
           // these are socket write errors which most likely means smtp connection errors
-          // lets skip them
+          // lets skip them and reconnect.
           $smtpConnectionErrors++;
           if ($smtpConnectionErrors <= 5) {
+            $mailer->disconnect();
+            $retryBatch = TRUE;
             continue;
           }
 
@@ -170,12 +180,16 @@ class DefaultSender extends BaseListener {
       }
     }
 
-    $e->setCompleted($job->writeToDB(
+    $completed = $job->writeToDB(
       $deliveredParams,
       $targetParams,
       $mailing,
       $job_date
-    ));
+    );
+    if ($retryBatch) {
+      $completed = FALSE;
+    }
+    $e->setCompleted($completed);
   }
 
 }
