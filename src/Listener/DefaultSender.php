@@ -157,7 +157,7 @@ class DefaultSender extends BaseListener {
       // If we have enabled the Throttle option, this is the time to enforce it.
       $mailThrottleTime = \CRM_Core_Config::singleton()->mailThrottleTime;
       if (!empty($mailThrottleTime)) {
-        usleep((int ) $mailThrottleTime);
+        usleep((int) $mailThrottleTime);
       }
     }
 
