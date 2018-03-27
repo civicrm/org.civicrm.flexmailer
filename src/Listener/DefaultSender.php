@@ -114,18 +114,9 @@ class DefaultSender extends BaseListener {
           \CRM_Core_Error::debug_log_message("Too many SMTP Socket Errors. Exiting");
           \CRM_Utils_System::civiExit();
         }
-
-        // Register the bounce event.
-
-        $params = array(
-          'event_queue_id' => $task->getEventQueueId(),
-          'job_id' => $job->id,
-          'hash' => $task->getHash(),
-        );
-        $params = array_merge($params,
-          \CRM_Mailing_BAO_BouncePattern::match($result->getMessage())
-        );
-        \CRM_Mailing_Event_BAO_Bounce::create($params);
+        else {
+          $this->recordBounce($job, $task, $result->getMessage());
+        }
       }
       else {
         // Register the delivery event.
@@ -217,6 +208,23 @@ class DefaultSender extends BaseListener {
     }
 
     return FALSE;
+  }
+
+  /**
+   * @param \CRM_Mailing_BAO_MailingJob $job
+   * @param FlexMailerTask $task
+   * @param string $errorMessage
+   */
+  protected function recordBounce($job, $task, $errorMessage) {
+    $params = array(
+      'event_queue_id' => $task->getEventQueueId(),
+      'job_id' => $job->id,
+      'hash' => $task->getHash(),
+    );
+    $params = array_merge($params,
+      \CRM_Mailing_BAO_BouncePattern::match($errorMessage)
+    );
+    \CRM_Mailing_Event_BAO_Bounce::create($params);
   }
 
 }
