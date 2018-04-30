@@ -41,6 +41,8 @@ use Civi\Token\TokenRow;
  */
 class DefaultComposer extends BaseListener {
 
+  protected $autoGeneratePlainText = false;
+
   public function onRun(RunEvent $e) {
     // FIXME: This probably doesn't belong here...
     if (defined('CIVICRM_MAIL_SMARTY') && CIVICRM_MAIL_SMARTY) {
@@ -74,10 +76,14 @@ class DefaultComposer extends BaseListener {
 
     $tpls = $this->createMessageTemplates($e);
     $tp->addMessage('subject', $tpls['subject'], 'text/plain');
-    $tp->addMessage('body_text', isset($tpls['text']) ? $tpls['text'] : '',
-      'text/plain');
-    $tp->addMessage('body_html', isset($tpls['html']) ? $tpls['html'] : '',
-      'text/html');
+    if(isset($tpls['html'])){
+      $tp->addMessage('body_html', isset($tpls['html']) ? $tpls['html'] : '', 'text/html');
+    }
+    if(isset($tpls['text'])){
+      $tp->addMessage('body_text', isset($tpls['text']) ? $tpls['text'] : '', 'text/plain');
+    }else{
+      $this->autoGeneratePlainText = true;
+    }
 
     $hasContent = FALSE;
     foreach ($e->getTasks() as $key => $task) {
@@ -160,11 +166,13 @@ class DefaultComposer extends BaseListener {
     FlexMailerTask $task,
     TokenRow $row
   ) {
-    return array(
-      'Subject' => $row->render('subject'),
-      'text' => $row->render('body_text'),
-      'html' => $row->render('body_html'),
-    );
+    $params['Subject'] = $row->render('subject');
+    $params['html'] = $row->render('body_html');
+    $params['text'] = $row->render('body_text');
+    if($this->autoGeneratePlainText){
+      $params['text'] = \CRM_Utils_String::htmlToText($params['html']);
+    }else{}
+    return $params;
   }
 
   /**
@@ -226,5 +234,4 @@ class DefaultComposer extends BaseListener {
     // of garbage data.
     return $e->getMailing()->url_tracking && !$e->isPreview();
   }
-
 }
