@@ -191,6 +191,15 @@ function flexmailer_civicrm_navigationMenu(&$menu) {
 } // */
 
 /**
+ * Implements hook_civicrm_alterMenu().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_alterMenu
+ */
+function flexmailer_civicrm_alterMenu(&$items) {
+  $items['civicrm/mailing/view']['page_callback'] = '\Civi\FlexMailer\Page\ViewMailing';
+}
+
+/**
  * Implements hook_civicrm_container().
  */
 function flexmailer_civicrm_container($container) {
