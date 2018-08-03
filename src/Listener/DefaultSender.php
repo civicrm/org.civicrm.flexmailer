@@ -58,6 +58,7 @@ class DefaultSender extends BaseListener {
 
     $targetParams = $deliveredParams = array();
     $count = 0;
+    $retryBatch = FALSE;
 
     foreach ($e->getTasks() as $key => $task) {
       /** @var FlexMailerTask $task */
@@ -81,8 +82,7 @@ class DefaultSender extends BaseListener {
       }
 
       $headers = $message->headers();
-      $result = $mailer->send($headers['To'], $message->headers(),
-        $message->get());
+      $result = $mailer->send($headers['To'], $message->headers(), $message->get());
 
       if ($job_date) {
         unset($errorScope);
@@ -92,18 +92,17 @@ class DefaultSender extends BaseListener {
         /** @var \PEAR_Error $result */
         // CRM-9191
         $message = $result->getMessage();
-        if (
-          strpos($message, 'Failed to write to socket') !== FALSE ||
-          strpos($message, 'Failed to set sender') !== FALSE
-        ) {
+        if ($this->isTemporaryError($result->getMessage())) {
           // lets log this message and code
           $code = $result->getCode();
           \CRM_Core_Error::debug_log_message("SMTP Socket Error or failed to set sender error. Message: $message, Code: $code");
 
           // these are socket write errors which most likely means smtp connection errors
-          // lets skip them
+          // lets skip them and reconnect.
           $smtpConnectionErrors++;
           if ($smtpConnectionErrors <= 5) {
+            $mailer->disconnect();
+            $retryBatch = TRUE;
             continue;
           }
 
@@ -114,18 +113,9 @@ class DefaultSender extends BaseListener {
           \CRM_Core_Error::debug_log_message("Too many SMTP Socket Errors. Exiting");
           \CRM_Utils_System::civiExit();
         }
-
-        // Register the bounce event.
-
-        $params = array(
-          'event_queue_id' => $task->getEventQueueId(),
-          'job_id' => $job->id,
-          'hash' => $task->getHash(),
-        );
-        $params = array_merge($params,
-          \CRM_Mailing_BAO_BouncePattern::match($result->getMessage())
-        );
-        \CRM_Mailing_Event_BAO_Bounce::create($params);
+        else {
+          $this->recordBounce($job, $task, $result->getMessage());
+        }
       }
       else {
         // Register the delivery event.
@@ -166,16 +156,74 @@ class DefaultSender extends BaseListener {
       // If we have enabled the Throttle option, this is the time to enforce it.
       $mailThrottleTime = \CRM_Core_Config::singleton()->mailThrottleTime;
       if (!empty($mailThrottleTime)) {
-        usleep((int ) $mailThrottleTime);
+        usleep((int) $mailThrottleTime);
       }
     }
 
-    $e->setCompleted($job->writeToDB(
+    $completed = $job->writeToDB(
       $deliveredParams,
       $targetParams,
       $mailing,
       $job_date
-    ));
+    );
+    if ($retryBatch) {
+      $completed = FALSE;
+    }
+    $e->setCompleted($completed);
+  }
+
+  /**
+   * Determine if an SMTP error is temporary or permanent.
+   *
+   * @param string $message
+   *   PEAR error message.
+   * @return bool
+   *   TRUE - Temporary/retriable error
+   *   FALSE - Permanent/non-retriable error
+   */
+  protected function isTemporaryError($message) {
+    // SMTP response code is buried in the message.
+    $code = preg_match('/ \(code: (.+), response: /', $message, $matches) ? $matches[1] : '';
+
+    if (strpos($message, 'Failed to write to socket') !== FALSE) {
+      return TRUE;
+    }
+
+    // Register 5xx SMTP response code (permanent failure) as bounce.
+    if (isset($code{0}) && $code{0} === '5') {
+      return FALSE;
+    }
+
+    if (strpos($message, 'Failed to set sender') !== FALSE) {
+      return TRUE;
+    }
+
+    if (strpos($message, 'Failed to add recipient') !== FALSE) {
+      return TRUE;
+    }
+
+    if (strpos($message, 'Failed to send data') !== FALSE) {
+      return TRUE;
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * @param \CRM_Mailing_BAO_MailingJob $job
+   * @param FlexMailerTask $task
+   * @param string $errorMessage
+   */
+  protected function recordBounce($job, $task, $errorMessage) {
+    $params = array(
+      'event_queue_id' => $task->getEventQueueId(),
+      'job_id' => $job->id,
+      'hash' => $task->getHash(),
+    );
+    $params = array_merge($params,
+      \CRM_Mailing_BAO_BouncePattern::match($errorMessage)
+    );
+    \CRM_Mailing_Event_BAO_Bounce::create($params);
   }
 
 }
