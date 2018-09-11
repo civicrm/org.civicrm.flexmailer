@@ -52,8 +52,20 @@ class HtmlClickTracker implements ClickTrackerInterface {
    *   String, HTML.
    */
   public static function replaceHrefUrls($html, $replace) {
-    $callback = function ($matches) use ($replace) {
-      return $matches[1] . $replace($matches[2]) . $matches[3];
+    $useNoFollow = version_compare(\CRM_Utils_System::version(), '5.5.alpha1', '>=');
+    $callback = function ($matches) use ($replace, $useNoFollow) {
+      $replacement = $replace($matches[2]);
+
+      // See: https://github.com/civicrm/civicrm-core/pull/12561
+      // If we track click-throughs on a link, then don't encourage search-engines to traverse them.
+      // At a policy level, I'm not sure I completely agree, but this keeps things consistent.
+      // You can tell if we're tracking a link because $replace() yields a diff URL.
+      $noFollow = '';
+      if ($useNoFollow && $replacement !== $matches[2]) {
+        $noFollow = " rel='nofollow'";
+      }
+
+      return $matches[1] . $replace($matches[2]) . $matches[3] . $noFollow;
     };
 
     // Find anything like href="..." or href='...' inside a tag.
