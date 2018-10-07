@@ -117,6 +117,7 @@ class DefaultComposer extends BaseListener {
       // FIXME: Use template_type, template_options
       'smarty' => defined('CIVICRM_MAIL_SMARTY') && CIVICRM_MAIL_SMARTY ? TRUE : FALSE,
       'mailingId' => $e->getMailing()->id,
+      'mailingJob' => $e->getJob(),
     );
   }
 
