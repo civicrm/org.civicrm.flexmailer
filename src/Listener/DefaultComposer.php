@@ -112,13 +112,18 @@ class DefaultComposer extends BaseListener {
    * @return array
    */
   public function createTokenProcessorContext(ComposeBatchEvent $e) {
-    return array(
+    $context = array(
       'controller' => get_class($this),
       // FIXME: Use template_type, template_options
       'smarty' => defined('CIVICRM_MAIL_SMARTY') && CIVICRM_MAIL_SMARTY ? TRUE : FALSE,
       'mailingId' => $e->getMailing()->id,
-      'mailingJob' => $e->getJob(),
     );
+    // REMOVE ME: This is a short-term compatibility adjustment.
+    // This is fair-game to remove after December 2018.
+    if (version_compare(\CRM_Utils_System::version(), '5.6.alpha1', '<')) {
+      $context['mailingJob'] = $e->getJob();
+    }
+    return $context;
   }
 
   /**
