@@ -80,6 +80,7 @@ class Services {
     $container->setDefinition('civi_flexmailer_bounce_tracker', new Definition('Civi\FlexMailer\Listener\BounceTracker'));
     $container->setDefinition('civi_flexmailer_default_sender', new Definition('Civi\FlexMailer\Listener\DefaultSender'));
     $container->setDefinition('civi_flexmailer_hooks', new Definition('Civi\FlexMailer\Listener\HookAdapter'));
+    $container->setDefinition('civi_flexmailer_test_prefix', new Definition('Civi\FlexMailer\Listener\TestPrefix'));
 
     $container->setDefinition('civi_flexmailer_html_click_tracker', new Definition('Civi\FlexMailer\ClickTracker\HtmlClickTracker'));
     $container->setDefinition('civi_flexmailer_text_click_tracker', new Definition('Civi\FlexMailer\ClickTracker\TextClickTracker'));
@@ -126,6 +127,7 @@ class Services {
     $listenerSpecs[] = array(FM::EVENT_COMPOSE, array('civi_flexmailer_default_composer', 'onCompose'), FM::WEIGHT_MAIN - 100);
     $listenerSpecs[] = array(FM::EVENT_COMPOSE, array('civi_flexmailer_attachments', 'onCompose'), FM::WEIGHT_ALTER);
     $listenerSpecs[] = array(FM::EVENT_COMPOSE, array('civi_flexmailer_open_tracker', 'onCompose'), FM::WEIGHT_ALTER);
+    $listenerSpecs[] = array(FM::EVENT_COMPOSE, array('civi_flexmailer_test_prefix', 'onCompose'), FM::WEIGHT_ALTER);
     $listenerSpecs[] = array(FM::EVENT_COMPOSE, array('civi_flexmailer_hooks', 'onCompose'), FM::WEIGHT_ALTER - 100);
 
     $listenerSpecs[] = array(FM::EVENT_SEND, array('civi_flexmailer_default_sender', 'onSend'), FM::WEIGHT_END);

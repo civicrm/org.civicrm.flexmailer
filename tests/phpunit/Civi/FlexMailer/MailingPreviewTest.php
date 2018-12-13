@@ -93,7 +93,7 @@ class MailingPreviewTest extends \CiviUnitTestCase {
       'SELECT MAX(id) FROM civicrm_mailing_recipients'); // 'Preview should not create any mailing_recipient records'
 
     $previewResult = $result['values'][$result['id']]['api.Mailing.preview'];
-    $this->assertEquals("Hello $displayName",
+    $this->assertEquals("[CiviMail Draft] Hello $displayName",
       $previewResult['values']['subject']);
     $this->assertContains("This is $displayName",
       $previewResult['values']['body_text']);
