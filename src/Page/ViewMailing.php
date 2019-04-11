@@ -39,23 +39,8 @@ class ViewMailing {
    */
   public function run() {
     $mailingID = \CRM_Utils_Request::retrieve('id', 'Int', \CRM_Core_DAO::$_nullObject, TRUE);
-    $result = civicrm_api3('Mailing', 'preview', [
-      'id' => $mailingID,
-    ]);
-    $mailing = \CRM_Utils_Array::value('values', $result);
-    if (isset($mailing['body_html']) && empty($_GET['text'])) {
-      $header = 'text/html; charset=utf-8';
-      $content = $mailing['body_html'];
-    }
-    else {
-      $header = 'text/plain; charset=utf-8';
-      $content = $mailing['body_text'];
-    }
-    \CRM_Utils_System::setTitle($mailing['subject']);
-    if (\CRM_Utils_Array::value('snippet', $_GET) === 'json') {
-      \CRM_Core_Page_AJAX::returnJsonResponse($content);
-    }
-    \CRM_Utils_System::setHttpHeader('Content-Type', $header);
+    $mailingView = new \CRM_Mailing_Page_View();
+    $content = $mailingView->run($mailingID);
 
     print $content;
     \CRM_Utils_System::civiExit();
