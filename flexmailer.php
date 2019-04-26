@@ -39,6 +39,7 @@ function _flexmailer_autoload($class) {
     require $file;
   }
 }
+
 spl_autoload_register('_flexmailer_autoload');
 
 /**
@@ -160,18 +161,6 @@ function flexmailer_civicrm_angularModules(&$angularModules) {
 function flexmailer_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _flexmailer_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
-
-/**
- * Functions below this ship commented out. Uncomment as required.
- *
-/**
- * Implements hook_civicrm_preProcess().
- *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_preProcess
- *
-function flexmailer_civicrm_preProcess($formName, &$form) {
-
-} // */
 
 /**
  * Implements hook_civicrm_navigationMenu().
