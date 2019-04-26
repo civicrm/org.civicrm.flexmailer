@@ -14,6 +14,8 @@ define('CIVICRM_FLEXMAILER_HACK_REQUIRED_TOKENS', 'call://civi_flexmailer_requir
 
 require_once 'flexmailer.civix.php';
 
+use CRM_Flexmailer_ExtensionUtil as E;
+
 /**
  * Define an autoloader for FlexMailer.
  *
@@ -196,4 +198,18 @@ function flexmailer_civicrm_container($container) {
     $container->addResource(new \Symfony\Component\Config\Resource\FileResource(__FILE__));
   }
   \Civi\FlexMailer\Services::registerServices($container);
+}
+
+/**
+ * Get a list of delivery options for traditional mailings.
+ *
+ * @return array
+ *   Array (string $machineName => string $label).
+ */
+function _flexmailer_traditional_options() {
+  return array(
+    'auto' => E::ts('Automatic'),
+    'bao' => E::ts('CiviMail BAO'),
+    'flexmailer' => E::ts('Flexmailer Pipeline'),
+  );
 }
