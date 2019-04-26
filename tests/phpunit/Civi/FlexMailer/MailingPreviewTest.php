@@ -30,7 +30,7 @@ class MailingPreviewTest extends \CiviUnitTestCase {
 
     parent::setUp();
 
-    \CRM_Core_BAO_Setting::setItem(TRUE, 'Mailing Preferences', 'experimentalFlexMailerEngine');
+    \Civi::settings()->set('flexmailer_traditional', 'flexmailer');
 
     $this->useTransaction();
     \CRM_Mailing_BAO_MailingJob::$mailsProcessed = 0; // DGW

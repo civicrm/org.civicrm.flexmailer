@@ -58,14 +58,14 @@ class ConcurrentDeliveryTest extends \api_v3_JobProcessMailingTest {
 
     parent::setUp();
 
-    \CRM_Core_BAO_Setting::setItem(TRUE, 'Mailing Preferences', 'experimentalFlexMailerEngine');
+    \Civi::settings()->set('flexmailer_traditional', 'flexmailer');
   }
 
   public function tearDown() {
     // We're building on someone else's test and don't fully trust them to
     // protect our settings. Make sure they did.
-    $ok = (TRUE == \CRM_Core_BAO_Setting::getItem('Mailing Preferences', 'experimentalFlexMailerEngine'))
-      && ('b:1;' === \CRM_Core_DAO::singleValueQuery('SELECT value FROM civicrm_setting WHERE name ="experimentalFlexMailerEngine"'));
+    $ok = ('flexmailer' == \Civi::settings()->get('flexmailer_traditional'))
+      && ('s:10:"flexmailer";' === \CRM_Core_DAO::singleValueQuery('SELECT value FROM civicrm_setting WHERE name ="flexmailer_traditional"'));
 
     parent::tearDown();
 
