@@ -39,8 +39,8 @@ class MailingPreviewTest extends \CiviUnitTestCase {
     $this->_email = 'test@test.test';
     $this->_params = array(
       'subject' => 'Hello {contact.display_name}',
-      'body_text' => "This is {contact.display_name}.\nhttps://civicrm.org\nda=({domain.address}) optout=({action.optOutUrl})",
-      'body_html' => "<p>This is {contact.display_name}.</p><p><a href='https://civicrm.org/'>CiviCRM.org</a></p><p>da=({domain.address}) optout=({action.optOutUrl})</p>",
+      'body_text' => "This is {contact.display_name}.\nhttps://civicrm.org\nda=({domain.address}) optout=({action.optOutUrl}) subj=({mailing.subject})",
+      'body_html' => "<p>This is {contact.display_name}.</p><p><a href='https://civicrm.org/'>CiviCRM.org</a></p><p>da=({domain.address}) optout=({action.optOutUrl}) subj=({mailing.subject})</p>",
       'name' => 'mailing name',
       'created_id' => $this->_contactID,
       'header_id' => '',
@@ -87,10 +87,12 @@ class MailingPreviewTest extends \CiviUnitTestCase {
     $this->assertContains("This is $displayName", $previewResult['values']['body_text']);
     $this->assertContains("civicrm/mailing/optout", $previewResult['values']['body_text']);
     $this->assertContains("&jid=&qid=&h=fakehash", $previewResult['values']['body_text']);
+    $this->assertContains("subj=(Hello ", $previewResult['values']['body_text']);
 
     $this->assertContains("<p>This is $displayName.</p>", $previewResult['values']['body_html']);
     $this->assertContains("civicrm/mailing/optout", $previewResult['values']['body_html']);
     $this->assertContains("&amp;jid=&amp;qid=&amp;h=fakehash", $previewResult['values']['body_html']);
+    $this->assertContains("subj=(Hello ", $previewResult['values']['body_html']);
 
     $this->assertEquals('flexmailer', $previewResult['values']['_rendered_by_']);
   }
@@ -114,10 +116,12 @@ class MailingPreviewTest extends \CiviUnitTestCase {
     $this->assertContains("This is $displayName", $previewResult['values']['body_text']);
     $this->assertContains("civicrm/mailing/optout", $previewResult['values']['body_text']);
     $this->assertContains("&jid=&qid=&h=fakehash", $previewResult['values']['body_text']);
+    $this->assertContains("subj=(Hello ", $previewResult['values']['body_text']);
 
     $this->assertContains("<p>This is $displayName.</p>", $previewResult['values']['body_html']);
     $this->assertContains("civicrm/mailing/optout", $previewResult['values']['body_html']);
     $this->assertContains("&amp;jid=&amp;qid=&amp;h=fakehash", $previewResult['values']['body_html']);
+    $this->assertContains("subj=(Hello ", $previewResult['values']['body_html']);
 
     $this->assertEquals('flexmailer', $previewResult['values']['_rendered_by_']);
   }
