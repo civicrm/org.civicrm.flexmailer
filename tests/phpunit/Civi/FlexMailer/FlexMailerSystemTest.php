@@ -63,7 +63,7 @@ class FlexMailerSystemTest extends \CRM_Mailing_BaseMailingSystemTest {
     }
 
     parent::setUp();
-    \CRM_Core_BAO_Setting::setItem(TRUE, 'Mailing Preferences', 'experimentalFlexMailerEngine');
+    \Civi::settings()->set('flexmailer_traditional', 'flexmailer');
 
     $dispatcher = \Civi::service('dispatcher');
     foreach (FlexMailer::getEventTypes() as $event => $class) {

@@ -44,7 +44,7 @@ class ValidatorTest extends \CiviUnitTestCase {
     }
 
     parent::setUp();
-    \CRM_Core_BAO_Setting::setItem(TRUE, 'Mailing Preferences', 'experimentalFlexMailerEngine');
+    \Civi::settings()->set('flexmailer_traditional', 'flexmailer');
   }
 
   public function getExamples() {
