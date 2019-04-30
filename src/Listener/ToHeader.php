@@ -70,11 +70,12 @@ class ToHeader extends BaseListener {
       $ids[$task->getContactId()] = $task->getContactId();
     }
 
-    if (!$ids) {
+    $ids = array_filter($ids, 'is_numeric');
+    if (empty($ids)) {
       return array();
     }
 
-    $idString = implode(',', array_filter($ids, 'is_numeric'));
+    $idString = implode(',', $ids);
 
     $query = \CRM_Core_DAO::executeQuery(
       "SELECT id, display_name FROM civicrm_contact WHERE id in ($idString)");
