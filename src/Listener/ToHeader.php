@@ -71,7 +71,7 @@ class ToHeader extends BaseListener {
     }
 
     $ids = array_filter($ids, 'is_numeric');
-    if (!$ids) {
+    if (empty($ids)) {
       return array();
     }
 
