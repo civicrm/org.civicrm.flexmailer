@@ -65,14 +65,14 @@ class HtmlClickTracker implements ClickTrackerInterface {
         $noFollow = " rel='nofollow'";
       }
 
-      return $matches[1] . $replace($matches[2]) . $matches[3] . $noFollow;
+      return $matches[1] . $replacement . $matches[3] . $noFollow;
     };
 
     // Find anything like href="..." or href='...' inside a tag.
     $tmp = preg_replace_callback(
       ';(\<[^>]*href *= *")([^">]+)(");', $callback, $html);
     return preg_replace_callback(
-      ';(\<[^>]*href *= *\')([^">]+)(\');', $callback, $tmp);
+      ';(\<[^>]*href *= *\')([^\'>]+)(\');', $callback, $tmp);
   }
 
   //  /**
