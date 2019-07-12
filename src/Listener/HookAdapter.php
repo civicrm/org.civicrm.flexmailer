@@ -27,7 +27,6 @@
 namespace Civi\FlexMailer\Listener;
 
 use Civi\FlexMailer\Event\ComposeBatchEvent;
-use Civi\FlexMailer\FlexMailerTask;
 
 class HookAdapter extends BaseListener {
 
@@ -42,7 +41,7 @@ class HookAdapter extends BaseListener {
     }
 
     foreach ($e->getTasks() as $task) {
-      /** @var FlexMailerTask $task */
+      /** @var \Civi\FlexMailer\FlexMailerTask $task */
       $mailParams = $task->getMailParams();
       if ($mailParams) {
         \CRM_Utils_Hook::alterMailParams($mailParams, 'flexmailer');
