@@ -27,7 +27,6 @@
 namespace Civi\FlexMailer\Listener;
 
 use Civi\FlexMailer\Event\ComposeBatchEvent;
-use Civi\FlexMailer\FlexMailerTask;
 
 class TestPrefix extends BaseListener {
 
@@ -42,7 +41,7 @@ class TestPrefix extends BaseListener {
     }
 
     foreach ($e->getTasks() as $task) {
-      /** @var FlexMailerTask $task */
+      /** @var \Civi\FlexMailer\FlexMailerTask $task */
       $subject = $task->getMailParam('Subject');
       $subject = ts('[CiviMail Draft]') . ' ' . $subject;
       $task->setMailParam('Subject', $subject);
