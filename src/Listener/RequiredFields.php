@@ -47,7 +47,7 @@ class RequiredFields extends BaseListener {
    * RequiredFields constructor.
    * @param array $fields
    */
-  public function __construct( $fields) {
+  public function __construct($fields) {
     $this->fields = $fields;
   }
 
