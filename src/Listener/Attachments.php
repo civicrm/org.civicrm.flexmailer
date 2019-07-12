@@ -27,7 +27,6 @@
 namespace Civi\FlexMailer\Listener;
 
 use Civi\FlexMailer\Event\ComposeBatchEvent;
-use Civi\FlexMailer\FlexMailerTask;
 
 class Attachments extends BaseListener {
 
@@ -42,7 +41,7 @@ class Attachments extends BaseListener {
     }
 
     foreach ($e->getTasks() as $task) {
-      /** @var FlexMailerTask $task */
+      /** @var \Civi\FlexMailer\FlexMailerTask $task */
       $task->setMailParam('attachments', $e->getAttachments());
     }
   }
