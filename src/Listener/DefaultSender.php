@@ -26,13 +26,7 @@
  */
 namespace Civi\FlexMailer\Listener;
 
-use Civi\FlexMailer\Event\RunEvent;
 use Civi\FlexMailer\Event\SendBatchEvent;
-use Civi\FlexMailer\Event\WalkBatchesEvent;
-use Civi\FlexMailer\FlexMailerTask;
-use Civi\Token\TokenProcessor;
-use Civi\Token\TokenRow;
-use Symfony\Component\EventDispatcher\Event;
 
 class DefaultSender extends BaseListener {
   const BULK_MAIL_INSERT_COUNT = 10;
@@ -56,7 +50,7 @@ class DefaultSender extends BaseListener {
     $retryBatch = FALSE;
 
     foreach ($e->getTasks() as $key => $task) {
-      /** @var FlexMailerTask $task */
+      /** @var \Civi\FlexMailer\FlexMailerTask $task */
       /** @var \Mail_mime $message */
       if (!$task->hasContent()) {
         continue;
@@ -206,7 +200,7 @@ class DefaultSender extends BaseListener {
 
   /**
    * @param \CRM_Mailing_BAO_MailingJob $job
-   * @param FlexMailerTask $task
+   * @param \Civi\FlexMailer\FlexMailerTask $task
    * @param string $errorMessage
    */
   protected function recordBounce($job, $task, $errorMessage) {
