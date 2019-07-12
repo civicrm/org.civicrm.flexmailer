@@ -36,9 +36,6 @@ use Civi\FlexMailer\ClickTracker\HtmlClickTracker;
 class HtmlClickTrackerTest extends \CiviUnitTestCase {
 
   public function setUp() {
-    if (version_compare(\CRM_Utils_System::version(), '4.7.29', '<')) {
-      $this->markTestSkipped('This version of CiviCRM does not support the necessary services.');
-    }
     // Activate before transactions are setup.
     $manager = \CRM_Extension_System::singleton()->getManager();
     if ($manager->getStatus('org.civicrm.flexmailer') !== \CRM_Extension_Manager::STATUS_INSTALLED) {

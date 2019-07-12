@@ -186,9 +186,7 @@ function flexmailer_civicrm_navigationMenu(&$menu) {
  * Implements hook_civicrm_container().
  */
 function flexmailer_civicrm_container($container) {
-  if (version_compare(\CRM_Utils_System::version(), '4.7.0', '>=')) {
-    $container->addResource(new \Symfony\Component\Config\Resource\FileResource(__FILE__));
-  }
+  $container->addResource(new \Symfony\Component\Config\Resource\FileResource(__FILE__));
   \Civi\FlexMailer\Services::registerServices($container);
 }
 

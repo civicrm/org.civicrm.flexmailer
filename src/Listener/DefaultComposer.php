@@ -119,11 +119,6 @@ class DefaultComposer extends BaseListener {
       'mailing' => $e->getMailing(),
       'mailingId' => $e->getMailing()->id,
     );
-    // REMOVE ME: This is a short-term compatibility adjustment.
-    // This is fair-game to remove after December 2018.
-    if (version_compare(\CRM_Utils_System::version(), '5.6.alpha1', '<')) {
-      $context['mailingJob'] = $e->getJob();
-    }
     return $context;
   }
 

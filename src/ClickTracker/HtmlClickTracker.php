@@ -52,7 +52,7 @@ class HtmlClickTracker implements ClickTrackerInterface {
    *   String, HTML.
    */
   public static function replaceHrefUrls($html, $replace) {
-    $useNoFollow = version_compare(\CRM_Utils_System::version(), '5.5.alpha1', '>=');
+    $useNoFollow = TRUE;
     $callback = function ($matches) use ($replace, $useNoFollow) {
       $replacement = $replace($matches[2]);
 

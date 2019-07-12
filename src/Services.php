@@ -41,9 +41,7 @@ use Civi\FlexMailer\FlexMailer as FM;
 class Services {
 
   public static function registerServices(ContainerBuilder $container) {
-    if (version_compare(\CRM_Utils_System::version(), '4.7.0', '>=')) {
-      $container->addResource(new \Symfony\Component\Config\Resource\FileResource(__FILE__));
-    }
+    $container->addResource(new \Symfony\Component\Config\Resource\FileResource(__FILE__));
 
     $apiOverrides = $container->setDefinition('civi_flexmailer_api_overrides', new Definition('Civi\API\Provider\ProviderInterface'));
     self::applyStaticFactory($apiOverrides, __CLASS__, 'createApiOverrides');

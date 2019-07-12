@@ -49,12 +49,7 @@ class DefaultSender extends BaseListener {
     $job = $e->getJob();
     $mailing = $e->getMailing();
     $job_date = \CRM_Utils_Date::isoToMysql($job->scheduled_date);
-    if (version_compare(\CRM_Utils_System::version(), '4.7.0', '>=')) {
-      $mailer = \Civi::service('pear_mail');
-    }
-    else {
-      $mailer = \CRM_Core_Config::singleton()->getMailer(TRUE);
-    }
+    $mailer = \Civi::service('pear_mail');
 
     $targetParams = $deliveredParams = array();
     $count = 0;
