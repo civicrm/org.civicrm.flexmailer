@@ -34,7 +34,7 @@ use \Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @package Civi\FlexMailer
  *
  * The *validator* determines whether a mailing is completely specified
- * (sendable). If not delivery.
+ * (sendable). If not, delivery should be blocked.
  */
 class Validator {
 
