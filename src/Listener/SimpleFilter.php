@@ -26,9 +26,7 @@
  */
 namespace Civi\FlexMailer\Listener;
 
-use Civi\Core\Resolver;
 use Civi\FlexMailer\Event\ComposeBatchEvent;
-use Civi\FlexMailer\FlexMailerTask;
 
 /**
  * Class SimpleFilter
@@ -58,7 +56,7 @@ class SimpleFilter {
    */
   public static function byValue(ComposeBatchEvent $e, $field, $filter) {
     foreach ($e->getTasks() as $task) {
-      /** @var FlexMailerTask $task */
+      /** @var \Civi\FlexMailer\FlexMailerTask $task */
       $value = $task->getMailParam($field);
       if ($value !== NULL) {
         $task->setMailParam($field, call_user_func($filter, $value, $task, $e));
@@ -86,7 +84,7 @@ class SimpleFilter {
     $values = array();
 
     foreach ($tasks as $k => $task) {
-      /** @var FlexMailerTask $task */
+      /** @var \Civi\FlexMailer\FlexMailerTask $task */
       $value = $task->getMailParam($field);
       if ($value !== NULL) {
         $values[$k] = $value;
