@@ -43,31 +43,37 @@ class FlexMailerTask {
 
   /**
    * @var int
+   *   A persistent record for this email delivery.
+   * @see \CRM_Mailing_Event_DAO_Queue
    */
   private $eventQueueId;
 
   /**
    * @var int
+   *   The ID of the recipiient.
+   * @see \CRM_Contact_DAO_Contact
    */
   private $contactId;
 
   /**
    * @var string
+   *   An authentication code. The name is misleading - it may be hash, but
+   *   that implementation detail is outside our purview.
    */
   private $hash;
 
   /**
    * @var string
-   *
-   * WAS: email
+   *   Selected/preferred email address of the intended recipient.
    */
   private $address;
 
   /**
-   * The individual email message to send (per alterMailParams).
+   * The full email message to send to this recipient (per alterMailParams).
    *
    * @var array
    * @see MailParams
+   * @see \CRM_Utils_Hook::alterMailParams()
    */
   private $mailParams = array();
 
@@ -75,9 +81,13 @@ class FlexMailerTask {
    * FlexMailerTask constructor.
    *
    * @param int $eventQueueId
+   *   A persistent record for this email delivery.
    * @param int $contactId
+   *   The ID of the recipiient.
    * @param string $hash
+   *   An authentication code.
    * @param string $address
+   *   Selected/preferred email address of the intended recipient.
    */
   public function __construct(
     $eventQueueId,
@@ -93,6 +103,7 @@ class FlexMailerTask {
 
   /**
    * @return int
+   * @see \CRM_Mailing_Event_DAO_Queue
    */
   public function getEventQueueId() {
     return $this->eventQueueId;
@@ -100,6 +111,8 @@ class FlexMailerTask {
 
   /**
    * @return int
+   *   The ID of the recipiient.
+   * @see \CRM_Contact_DAO_Contact
    */
   public function getContactId() {
     return $this->contactId;
@@ -107,6 +120,8 @@ class FlexMailerTask {
 
   /**
    * @return string
+   *   An authentication code. The name is misleading - it may be hash, but
+   *   that implementation detail is outside our purview.
    */
   public function getHash() {
     return $this->hash;
@@ -114,6 +129,7 @@ class FlexMailerTask {
 
   /**
    * @return string
+   *   Selected email address of the intended recipient.
    */
   public function getAddress() {
     return $this->address;
