@@ -27,7 +27,6 @@
 namespace Civi\FlexMailer\Listener;
 
 use Civi\FlexMailer\Event\ComposeBatchEvent;
-use Civi\FlexMailer\FlexMailerTask;
 
 class ToHeader extends BaseListener {
 
@@ -43,7 +42,7 @@ class ToHeader extends BaseListener {
 
     $names = $this->getContactNames($e->getTasks());
     foreach ($e->getTasks() as $task) {
-      /** @var FlexMailerTask $task */
+      /** @var \Civi\FlexMailer\FlexMailerTask $task */
 
       $task->setMailParam('toEmail', $task->getAddress());
 
@@ -59,14 +58,14 @@ class ToHeader extends BaseListener {
   /**
    * Lookup contact names as a batch.
    *
-   * @param array <FlexMailerTask> $tasks
+   * @param array<FlexMailerTask> $tasks
    * @return array
    *   Array(int $contactId => string $displayName).
    */
   protected function getContactNames($tasks) {
     $ids = array();
     foreach ($tasks as $task) {
-      /** @var FlexMailerTask $task */
+      /** @var \Civi\FlexMailer\FlexMailerTask $task */
       $ids[$task->getContactId()] = $task->getContactId();
     }
 

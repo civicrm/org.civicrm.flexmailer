@@ -27,7 +27,6 @@
 namespace Civi\FlexMailer\Listener;
 
 use Civi\FlexMailer\Event\ComposeBatchEvent;
-use Civi\FlexMailer\FlexMailerTask;
 
 class BasicHeaders extends BaseListener {
 
@@ -44,7 +43,7 @@ class BasicHeaders extends BaseListener {
     $mailing = $e->getMailing();
 
     foreach ($e->getTasks() as $task) {
-      /** @var FlexMailerTask $task */
+      /** @var \Civi\FlexMailer\FlexMailerTask $task */
 
       if ($task->hasContent()) {
         continue;

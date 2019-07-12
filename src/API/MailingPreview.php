@@ -50,7 +50,7 @@ class MailingPreview {
     $flexMailer = new FlexMailer(array(
       'is_preview' => TRUE,
       'mailing' => $mailing,
-      'job' => $job, // HMM?
+      'job' => $job,
       'attachments' => \CRM_Core_BAO_File::getEntityFile('civicrm_mailing',
         $mailing->id),
     ));
@@ -70,7 +70,8 @@ class MailingPreview {
       'subject' => $task->getMailParam('Subject'),
       'body_html' => $task->getMailParam('html'),
       'body_text' => $task->getMailParam('text'),
-      '_rendered_by_' => 'flexmailer', // To support tests
+      // Flag our role in processing this - to support tests.
+      '_rendered_by_' => 'flexmailer',
     ));
   }
 

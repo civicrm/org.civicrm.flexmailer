@@ -27,6 +27,7 @@
 namespace Civi\FlexMailer\ClickTracker;
 
 interface ClickTrackerInterface {
+
   /**
    * @param string $msg
    * @param int $mailing_id

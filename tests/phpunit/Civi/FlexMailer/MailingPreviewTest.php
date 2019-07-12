@@ -33,7 +33,8 @@ class MailingPreviewTest extends \CiviUnitTestCase {
     \Civi::settings()->set('flexmailer_traditional', 'flexmailer');
 
     $this->useTransaction();
-    \CRM_Mailing_BAO_MailingJob::$mailsProcessed = 0; // DGW
+    // DGW
+    \CRM_Mailing_BAO_MailingJob::$mailsProcessed = 0;
     $this->_contactID = $this->individualCreate();
     $this->_groupID = $this->groupCreate();
     $this->_email = 'test@test.test';
@@ -56,7 +57,8 @@ class MailingPreviewTest extends \CiviUnitTestCase {
   }
 
   public function tearDown() {
-    \CRM_Mailing_BAO_MailingJob::$mailsProcessed = 0; // DGW
+    // DGW
+    \CRM_Mailing_BAO_MailingJob::$mailsProcessed = 0;
     parent::tearDown();
   }
 

@@ -27,7 +27,7 @@
 namespace Civi\FlexMailer;
 
 use Civi\FlexMailer\Event\CheckSendableEvent;
-use \Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class Validator
@@ -55,13 +55,13 @@ class Validator {
   }
 
   /**
-   * @var EventDispatcherInterface
+   * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
    */
   private $dispatcher;
 
   /**
    * FlexMailer constructor.
-   * @param EventDispatcherInterface $dispatcher
+   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $dispatcher
    */
   public function __construct(EventDispatcherInterface $dispatcher = NULL) {
     $this->dispatcher = $dispatcher ? $dispatcher : \Civi::service('dispatcher');

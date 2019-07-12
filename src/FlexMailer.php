@@ -25,16 +25,12 @@
  +--------------------------------------------------------------------+
  */
 namespace Civi\FlexMailer;
+
 use Civi\FlexMailer\Event\ComposeBatchEvent;
 use Civi\FlexMailer\Event\RunEvent;
 use Civi\FlexMailer\Event\SendBatchEvent;
 use Civi\FlexMailer\Event\WalkBatchesEvent;
-use Civi\FlexMailer\Listener\DefaultBatcher;
-use Civi\FlexMailer\Listener\DefaultComposer;
-use Civi\FlexMailer\Listener\DefaultSender;
-use Civi\FlexMailer\Listener\HookAdapter;
-use Civi\FlexMailer\Listener\OpenTracker;
-use \Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Class FlexMailer
@@ -77,13 +73,6 @@ use \Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * to do. If your listener does the work required for the event, then
  * you can disable the default listener by calling `$event->stopPropagation()`.
  *
- * @see CRM_Utils_Hook::container
- * @see Civi\Core\Container
- * @see DefaultBatcher
- * @see DefaultComposer
- * @see DefaultSender
- * @see HookAdapter
- * @see OpenTracker
  * @link http://symfony.com/doc/current/components/event_dispatcher.html
  */
 class FlexMailer {
@@ -125,7 +114,7 @@ class FlexMailer {
   public $context;
 
   /**
-   * @var EventDispatcherInterface
+   * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
    */
   private $dispatcher;
 
@@ -156,7 +145,7 @@ class FlexMailer {
    *     - mailing: \CRM_Mailing_BAO_Mailing
    *     - job: \CRM_Mailing_BAO_MailingJob
    *     - attachments: array
-   * @param EventDispatcherInterface $dispatcher
+   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $dispatcher
    */
   public function __construct($context = array(), EventDispatcherInterface $dispatcher = NULL) {
     $this->context = $context;
@@ -169,7 +158,8 @@ class FlexMailer {
    * @throws \CRM_Core_Exception
    */
   public function run() {
-    $flexMailer = $this; // PHP 5.3
+    // PHP 5.3
+    $flexMailer = $this;
 
     if (count($this->validate()) > 0) {
       throw new \CRM_Core_Exception("FlexMailer cannot execute: invalid context");
@@ -205,7 +195,7 @@ class FlexMailer {
   }
 
   /**
-   * @return RunEvent
+   * @return \Civi\FlexMailer\Event\RunEvent
    */
   public function fireRun() {
     $event = new RunEvent($this->context);
@@ -215,7 +205,7 @@ class FlexMailer {
 
   /**
    * @param callable $onVisitBatch
-   * @return WalkBatchesEvent
+   * @return \Civi\FlexMailer\Event\WalkBatchesEvent
    */
   public function fireWalkBatches($onVisitBatch) {
     $event = new WalkBatchesEvent($this->context, $onVisitBatch);
@@ -225,7 +215,7 @@ class FlexMailer {
 
   /**
    * @param array<FlexMailerTask> $tasks
-   * @return ComposeBatchEvent
+   * @return \Civi\FlexMailer\Event\ComposeBatchEvent
    */
   public function fireComposeBatch($tasks) {
     // This isn't a great place for this, but it ensures consistent cleanup.
@@ -241,7 +231,7 @@ class FlexMailer {
 
   /**
    * @param array<FlexMailerTask> $tasks
-   * @return SendBatchEvent
+   * @return \Civi\FlexMailer\Event\SendBatchEvent
    */
   public function fireSendBatch($tasks) {
     $event = new SendBatchEvent($this->context, $tasks);

@@ -79,7 +79,8 @@ class Abdicator {
    */
   public function onRun(RunEvent $e) {
     if (self::isFlexmailPreferred($e->getMailing())) {
-      return; // OK, we'll continue running.
+      // OK, we'll continue running.
+      return;
     }
 
     // Nope, we'll abdicate.
@@ -98,7 +99,8 @@ class Abdicator {
    */
   public function onCheckSendable($e) {
     if (self::isFlexmailPreferred($e->getMailing())) {
-      return; // OK, we'll continue running.
+      // OK, we'll continue running.
+      return;
     }
 
     $e->stopPropagation();
