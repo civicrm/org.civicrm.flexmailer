@@ -81,7 +81,7 @@ class DefaultComposer extends BaseListener {
 
     $hasContent = FALSE;
     foreach ($e->getTasks() as $key => $task) {
-      /** @var FlexMailerTask $task */
+      /** @var \Civi\FlexMailer\FlexMailerTask $task */
       if (!$task->hasContent()) {
         $tp->addRow()->context($this->createTokenRowContext($e, $task));
         $hasContent = TRUE;
@@ -95,8 +95,8 @@ class DefaultComposer extends BaseListener {
     $tp->evaluate();
 
     foreach ($tp->getRows() as $row) {
-      /** @var TokenRow $row */
-      /** @var FlexMailerTask $task */
+      /** @var \Civi\Token\TokenRow $row */
+      /** @var \Civi\FlexMailer\FlexMailerTask $task */
       $task = $row->context['flexMailerTask'];
       $task->setMailParams(array_merge(
         $this->createMailParams($e, $task, $row),
@@ -126,7 +126,7 @@ class DefaultComposer extends BaseListener {
    * Create contextual data for a message recipient.
    *
    * @param \Civi\FlexMailer\Event\ComposeBatchEvent $e
-   * @param FlexMailerTask $task
+   * @param \Civi\FlexMailer\FlexMailerTask $task
    * @return array
    *   Contextual data describing the recipient.
    *   Typical values are `contactId` or `mailingJobId`.
@@ -151,8 +151,8 @@ class DefaultComposer extends BaseListener {
    * For a given task, prepare the mailing.
    *
    * @param \Civi\FlexMailer\Event\ComposeBatchEvent $e
-   * @param FlexMailerTask $task
-   * @param TokenRow $row
+   * @param \Civi\FlexMailer\FlexMailerTask $task
+   * @param \Civi\Token\TokenRow $row
    * @return array
    *   A list of email parameters, such as "Subject", "text", and/or "html".
    * @see \CRM_Utils_Hook::alterMailParams
@@ -172,7 +172,7 @@ class DefaultComposer extends BaseListener {
   /**
    * Generate the message templates for use with token-processor.
    *
-   * @param ComposeBatchEvent $e
+   * @param \Civi\FlexMailer\Event\ComposeBatchEvent $e
    * @return array
    *   A list of templates. Some combination of:
    *     - subject: string
@@ -195,7 +195,7 @@ class DefaultComposer extends BaseListener {
    * via `cv debug:event-dispatcher', but it produces the expected
    * interactions among tokens and click-tracking.
    *
-   * @param ComposeBatchEvent $e
+   * @param \Civi\FlexMailer\Event\ComposeBatchEvent $e
    * @param array $templates
    * @return array
    *   Updated templates.
