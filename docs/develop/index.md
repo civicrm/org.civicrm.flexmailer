@@ -3,7 +3,7 @@
 The [headless unit tests](https://docs.civicrm.org/dev/en/latest/testing/#headless) are based on `phpunit4` and `cv`. Simply run:
 
 ```
-$ phpunit4
+$ phpunit5
 ```
 
 ## Events
