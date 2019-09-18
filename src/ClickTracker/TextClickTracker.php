@@ -13,13 +13,18 @@ namespace Civi\FlexMailer\ClickTracker;
 class TextClickTracker implements ClickTrackerInterface {
 
   public function filterContent($msg, $mailing_id, $queue_id) {
+
+    $getTrackerURL = BaseClickTracker::$getTrackerURL;
+
     return self::replaceTextUrls($msg,
-      function ($url) use ($mailing_id, $queue_id) {
+      function ($url) use ($mailing_id, $queue_id, $getTrackerURL) {
         if (strpos($url, '{') !== FALSE) {
-          return $url;
+          $data = HtmlClickTracker::getTrackerURLForUrlWithTokens($url, $mailing_id, $queue_id);
         }
-        return \CRM_Mailing_BAO_TrackableURL::getTrackerURL($url, $mailing_id,
-          $queue_id);
+        else {
+          $data = $getTrackerURL($url, $mailing_id, $queue_id);
+        }
+        return $data;
       }
     );
   }

@@ -10,16 +10,20 @@
  */
 namespace Civi\FlexMailer\ClickTracker;
 
-class HtmlClickTracker implements ClickTrackerInterface {
+class HtmlClickTracker extends BaseClickTracker implements ClickTrackerInterface {
 
   public function filterContent($msg, $mailing_id, $queue_id) {
+
+    $getTrackerURL = BaseClickTracker::$getTrackerURL;
+
     return self::replaceHrefUrls($msg,
-      function ($url) use ($mailing_id, $queue_id) {
+      function ($url) use ($mailing_id, $queue_id, $getTrackerURL) {
         if (strpos($url, '{') !== FALSE) {
-          return $url;
+          $data = BaseClickTracker::getTrackerURLForUrlWithTokens($url, $mailing_id, $queue_id);
         }
-        $data = \CRM_Mailing_BAO_TrackableURL::getTrackerURL(
-          $url, $mailing_id, $queue_id);
+        else {
+          $data = $getTrackerURL($url, $mailing_id, $queue_id);
+        }
         $data = htmlentities($data, ENT_NOQUOTES);
         return $data;
       }
@@ -38,7 +42,9 @@ class HtmlClickTracker implements ClickTrackerInterface {
   public static function replaceHrefUrls($html, $replace) {
     $useNoFollow = TRUE;
     $callback = function ($matches) use ($replace, $useNoFollow) {
-      $replacement = $replace($matches[2]);
+      // Since we're dealing with HTML let's strip out the entities in the URL
+      // so tht we can add them back in later.
+      $replacement = $replace(html_entity_decode($matches[2]));
 
       // See: https://github.com/civicrm/civicrm-core/pull/12561
       // If we track click-throughs on a link, then don't encourage search-engines to traverse them.
@@ -58,6 +64,7 @@ class HtmlClickTracker implements ClickTrackerInterface {
     return preg_replace_callback(
       ';(\<[^>]*href *= *\')([^\'>]+)(\');', $callback, $tmp);
   }
+
 
   //  /**
   //   * Find URL expressions; replace them with tracked URLs.
