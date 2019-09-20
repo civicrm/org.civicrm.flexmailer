@@ -47,8 +47,13 @@ class OpenTracker extends BaseListener {
       $mailParams = $task->getMailParams();
 
       if (!empty($mailParams) && !empty($mailParams['html'])) {
+        $tracking_url = $config->userSystem->languageNegotiationURL(
+          $config->userFrameworkBaseURL . \Civi::settings()->get('userFrameworkResourceURL') . "/extern/open.php?q=" . $task->getEventQueueId(),
+          FALSE,
+          TRUE
+        );
         $mailParams['html'] .= "\n" . '<img src="' .
-          $config->userFrameworkResourceURL . "extern/open.php?q=" . $task->getEventQueueId() .
+          $tracking_url .
           "\" width='1' height='1' alt='' border='0'>";
 
         $task->setMailParams($mailParams);
