@@ -56,7 +56,7 @@ class TextClickTracker implements ClickTrackerInterface {
     };
     // Find any HTTP(S) URLs in the text.
     // return preg_replace_callback('/\b(?:(?:https?):\/\/|www\.|ftp\.)[-A-Z0-9+&@#\/%=~_|$?!:,.]*[A-Z0-9+&@#\/%=~_|$]/i', $callback, $tex
-    return preg_replace_callback('/\b(?:(?:https?):\/\/)[-A-Z0-9+&@#\/%=~_|$?!:,.{}]*[A-Z0-9+&@#\/%=~_|${}]/i',
+    return preg_replace_callback('/\b(?:(?:https?):\/\/)[-A-Z0-9+&@#\/%=~_|$?!:,.{}\[\];]*[A-Z0-9+&@#\/%=~_|${}\[\];]/i',
       $callback, $text);
   }
 
