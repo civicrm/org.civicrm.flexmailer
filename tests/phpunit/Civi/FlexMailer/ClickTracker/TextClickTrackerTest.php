@@ -26,14 +26,14 @@
  */
 namespace Civi\FlexMailer\Listener;
 
-use Civi\FlexMailer\ClickTracker\HtmlClickTracker;
+use Civi\FlexMailer\ClickTracker\TextClickTracker;
 
 /**
  * Class HtmlClickTrackerTest
  *
  * @group headless
  */
-class HtmlClickTrackerTest extends \CiviUnitTestCase {
+class TextClickTrackerTest extends \CiviUnitTestCase {
 
   public function setUp() {
     // Activate before transactions are setup.
@@ -95,12 +95,15 @@ class HtmlClickTrackerTest extends \CiviUnitTestCase {
    * @param $expectHtml
    * @dataProvider getHrefExamples
    */
-  public function testReplaceHref($inputHtml, $expectHtml) {
-    $actual = HtmlClickTracker::replaceHrefUrls($inputHtml, function($url) {
+  public function testReplaceTextUrls($inputHtml, $expectHtml) {
+    $inputText = \CRM_Utils_String::htmlToText($inputHtml);
+    $expectText = \CRM_Utils_String::htmlToText($expectHtml);
+    $expectText = str_replace('/tracking', 'tracking', $expectText);
+    $actual = TextClickTracker::replaceTextUrls($inputText, function($url) {
       return "tracking($url)";
     });
 
-    $this->assertEquals($expectHtml, $actual, "Check substitutions on text ($inputHtml)");
+    $this->assertEquals($expectText, $actual, "Check substitutions on text ($inputText)");
   }
 
 }
