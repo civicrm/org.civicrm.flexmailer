@@ -54,9 +54,9 @@ class HtmlClickTracker implements ClickTrackerInterface {
 
     // Find anything like href="..." or href='...' inside a tag.
     $tmp = preg_replace_callback(
-      ';(\<[^>]*href *= *")([^">]+)(");', $callback, $html);
+      ';(\<[^>]*href *= *")([^#">]+)(");', $callback, $html);
     return preg_replace_callback(
-      ';(\<[^>]*href *= *\')([^\'>]+)(\');', $callback, $tmp);
+      ';(\<[^>]*href *= *\')([^#\'>]+)(\');', $callback, $tmp);
   }
 
   //  /**
