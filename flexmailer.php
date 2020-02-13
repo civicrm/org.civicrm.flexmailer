@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Civi v4.6 does not provide all the API's we would need to define
+ * Civi v5.19 does not provide all the API's we would need to define
  * FlexMailer in an extension, but you can patch core to simulate them.
  * These define()s tell core to enable any such hacks (if available).
  */
@@ -9,8 +9,6 @@
 define('CIVICRM_FLEXMAILER_HACK_DELIVER', '\Civi\FlexMailer\FlexMailer::createAndRun');
 define('CIVICRM_FLEXMAILER_HACK_SENDABLE', '\Civi\FlexMailer\Validator::createAndRun');
 define('CIVICRM_FLEXMAILER_HACK_REQUIRED_TOKENS', 'call://civi_flexmailer_required_tokens/getRequiredTokens');
-//define('CIVICRM_FLEXMAILER_HACK_SERVICES', '\Civi\FlexMailer\Services::registerServices');
-//define('CIVICRM_FLEXMAILER_HACK_LISTENERS', '\Civi\FlexMailer\Services::registerListeners');
 
 require_once 'flexmailer.civix.php';
 
@@ -126,19 +124,6 @@ function flexmailer_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
  */
 function flexmailer_civicrm_managed(&$entities) {
   _flexmailer_civix_civicrm_managed($entities);
-}
-
-/**
- * Implements hook_civicrm_caseTypes().
- *
- * Generate a list of case-types.
- *
- * Note: This hook only runs in CiviCRM 4.4+.
- *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_caseTypes
- */
-function flexmailer_civicrm_caseTypes(&$caseTypes) {
-  _flexmailer_civix_civicrm_caseTypes($caseTypes);
 }
 
 /**
