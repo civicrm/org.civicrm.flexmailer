@@ -171,13 +171,13 @@ function flexmailer_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
  */
 function flexmailer_civicrm_navigationMenu(&$menu) {
   _flexmailer_civix_insert_navigation_menu($menu, 'Administer/CiviMail', [
-    'label' => ts('Flexmailer Settings', array('domain' => 'org.civicrm.flexmailer')),
+    'label' => E::ts('Flexmailer Settings'),
     'name' => 'flexmailer_settings',
     'permission' => 'administer CiviCRM',
-    'child' => array(),
+    'child' => [],
     'operator' => 'AND',
     'separator' => 0,
-    'url' => CRM_Utils_System::url('civicrm/admin/flexmailer', 'reset=1', TRUE),
+    'url' => CRM_Utils_System::url('civicrm/admin/setting/flexmailer', 'reset=1', TRUE),
   ]);
   _flexmailer_civix_navigationMenu($menu);
 }
