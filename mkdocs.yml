@@ -2,7 +2,7 @@ site_name: FlexMailer
 repo_url: https://github.com/civicrm/org.civicrm.flexmailer
 theme: material
 
-pages:
+nav:
 - Introduction: index.md
 - Installation: install.md
 - Development:
