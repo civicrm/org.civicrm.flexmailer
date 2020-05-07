@@ -1,8 +1,9 @@
 site_name: FlexMailer
 repo_url: https://github.com/civicrm/org.civicrm.flexmailer
-theme: material
+theme: 
+  name: material
 
-pages:
+nav:
 - Introduction: index.md
 - Installation: install.md
 - Development:
@@ -18,7 +19,8 @@ markdown_extensions:
   - admonition
   - def_list
   - codehilite
-  - toc(permalink=true)
+  - toc:
+      permalink: true
   - pymdownx.superfences
   - pymdownx.inlinehilite
   - pymdownx.tilde
