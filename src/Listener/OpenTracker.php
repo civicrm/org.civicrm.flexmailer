@@ -26,14 +26,19 @@ class OpenTracker extends BaseListener {
 
     $config = \CRM_Core_Config::singleton();
 
+    // TODO: After v5.21 goes EOL, remove the $isLegacy check.
+    $isLegacy = !is_callable(['CRM_Utils_System', 'externUrl']);
+
     foreach ($e->getTasks() as $task) {
       /** @var \Civi\FlexMailer\FlexMailerTask $task */
       $mailParams = $task->getMailParams();
 
       if (!empty($mailParams) && !empty($mailParams['html'])) {
-        $mailParams['html'] .= "\n" . '<img src="' .
-          $config->userFrameworkResourceURL . "extern/open.php?q=" . $task->getEventQueueId() .
-          "\" width='1' height='1' alt='' border='0'>";
+        $openUrl = $isLegacy
+          ? $config->userFrameworkResourceURL . "extern/open.php?q=" . $task->getEventQueueId()
+          : \CRM_Utils_System::externUrl('extern/open', "q=" . $task->getEventQueueId());
+
+        $mailParams['html'] .= "\n" . '<img src="' . htmlentities($openUrl) . "\" width='1' height='1' alt='' border='0'>";
 
         $task->setMailParams($mailParams);
       }
