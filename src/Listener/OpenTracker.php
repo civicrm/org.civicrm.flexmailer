@@ -27,7 +27,7 @@ class OpenTracker extends BaseListener {
     $config = \CRM_Core_Config::singleton();
 
     // TODO: After v5.21 goes EOL, remove the $isLegacy check.
-    $isLegacy = !is_callable(['CRM_Utils_System', 'externUrl']);
+    $isLegacy = version_compare(\CRM_Utils_System::version(), '5.23.alpha', '<');
 
     foreach ($e->getTasks() as $task) {
       /** @var \Civi\FlexMailer\FlexMailerTask $task */
