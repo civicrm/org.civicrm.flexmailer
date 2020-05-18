@@ -15,34 +15,6 @@ require_once 'flexmailer.civix.php';
 use CRM_Flexmailer_ExtensionUtil as E;
 
 /**
- * Define an autoloader for FlexMailer.
- *
- * FlexMailer uses the namespace 'Civi\FlexMailer', but the
- * autoloader in Civi v4.6 doesn't support this, so we provide
- * our own autoloader.
- *
- * TODO: Whenever v4.6 dies, remove this file and define the
- * autoloader in info.xml
- *
- * @link http://www.php-fig.org/psr/psr-4/examples/
- */
-function _flexmailer_autoload($class) {
-  $prefix = 'Civi\\FlexMailer\\';
-  $base_dir = __DIR__ . '/src/';
-  $len = strlen($prefix);
-  if (strncmp($prefix, $class, $len) !== 0) {
-    return;
-  }
-  $relative_class = substr($class, $len);
-  $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
-  if (file_exists($file)) {
-    require $file;
-  }
-}
-
-spl_autoload_register('_flexmailer_autoload');
-
-/**
  * Implements hook_civicrm_config().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_config
