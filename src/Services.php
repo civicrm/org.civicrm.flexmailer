@@ -10,10 +10,12 @@
  */
 namespace Civi\FlexMailer;
 
+use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher;
+use Civi\FlexMailer\API\Overrides as AO;
 use Civi\FlexMailer\FlexMailer as FM;
 
 /**
@@ -27,7 +29,7 @@ class Services {
   public static function registerServices(ContainerBuilder $container) {
     $container->addResource(new \Symfony\Component\Config\Resource\FileResource(__FILE__));
 
-    $apiOverrides = $container->setDefinition('civi_flexmailer_api_overrides', new Definition('Civi\API\Provider\ProviderInterface'));
+    $apiOverrides = $container->setDefinition('civi_flexmailer_api_overrides', new Definition('Civi\API\Provider\ProviderInterface'))->setPublic(TRUE);
     self::applyStaticFactory($apiOverrides, __CLASS__, 'createApiOverrides');
 
     $container->setDefinition('civi_flexmailer_required_fields', new Definition('Civi\FlexMailer\Listener\RequiredFields', array(
@@ -38,7 +40,7 @@ class Services {
         'from_email',
         '(body_html|body_text)',
       ),
-    )));
+    )))->setPublic(TRUE);
     $container->setDefinition('civi_flexmailer_required_tokens', new Definition('Civi\FlexMailer\Listener\RequiredTokens', array(
       array('traditional'),
       array(
@@ -50,34 +52,34 @@ class Services {
           'action.unsubscribeUrl' => ts("'Unsubscribe via web page' - creates a link for recipients to unsubscribe from the specific mailing list used to send this message. Alternatively, you can include the 'Unsubscribe via email' token or one of the Opt-out tokens."),
         ),
       ),
-    )));
+    )))->setPublic(TRUE);
 
-    $container->setDefinition('civi_flexmailer_abdicator', new Definition('Civi\FlexMailer\Listener\Abdicator'));
-    $container->setDefinition('civi_flexmailer_default_batcher', new Definition('Civi\FlexMailer\Listener\DefaultBatcher'));
-    $container->setDefinition('civi_flexmailer_default_composer', new Definition('Civi\FlexMailer\Listener\DefaultComposer'));
-    $container->setDefinition('civi_flexmailer_open_tracker', new Definition('Civi\FlexMailer\Listener\OpenTracker'));
-    $container->setDefinition('civi_flexmailer_basic_headers', new Definition('Civi\FlexMailer\Listener\BasicHeaders'));
-    $container->setDefinition('civi_flexmailer_to_header', new Definition('Civi\FlexMailer\Listener\ToHeader'));
-    $container->setDefinition('civi_flexmailer_attachments', new Definition('Civi\FlexMailer\Listener\Attachments'));
-    $container->setDefinition('civi_flexmailer_bounce_tracker', new Definition('Civi\FlexMailer\Listener\BounceTracker'));
-    $container->setDefinition('civi_flexmailer_default_sender', new Definition('Civi\FlexMailer\Listener\DefaultSender'));
-    $container->setDefinition('civi_flexmailer_hooks', new Definition('Civi\FlexMailer\Listener\HookAdapter'));
-    $container->setDefinition('civi_flexmailer_test_prefix', new Definition('Civi\FlexMailer\Listener\TestPrefix'));
+    $container->setDefinition('civi_flexmailer_abdicator', new Definition('Civi\FlexMailer\Listener\Abdicator'))->setPublic(TRUE);
+    $container->setDefinition('civi_flexmailer_default_batcher', new Definition('Civi\FlexMailer\Listener\DefaultBatcher'))->setPublic(TRUE);
+    $container->setDefinition('civi_flexmailer_default_composer', new Definition('Civi\FlexMailer\Listener\DefaultComposer'))->setPublic(TRUE);
+    $container->setDefinition('civi_flexmailer_open_tracker', new Definition('Civi\FlexMailer\Listener\OpenTracker'))->setPublic(TRUE);
+    $container->setDefinition('civi_flexmailer_basic_headers', new Definition('Civi\FlexMailer\Listener\BasicHeaders'))->setPublic(TRUE);
+    $container->setDefinition('civi_flexmailer_to_header', new Definition('Civi\FlexMailer\Listener\ToHeader'))->setPublic(TRUE);
+    $container->setDefinition('civi_flexmailer_attachments', new Definition('Civi\FlexMailer\Listener\Attachments'))->setPublic(TRUE);
+    $container->setDefinition('civi_flexmailer_bounce_tracker', new Definition('Civi\FlexMailer\Listener\BounceTracker'))->setPublic(TRUE);
+    $container->setDefinition('civi_flexmailer_default_sender', new Definition('Civi\FlexMailer\Listener\DefaultSender'))->setPublic(TRUE);
+    $container->setDefinition('civi_flexmailer_hooks', new Definition('Civi\FlexMailer\Listener\HookAdapter'))->setPublic(TRUE);
+    $container->setDefinition('civi_flexmailer_test_prefix', new Definition('Civi\FlexMailer\Listener\TestPrefix'))->setPublic(TRUE);
 
-    $container->setDefinition('civi_flexmailer_html_click_tracker', new Definition('Civi\FlexMailer\ClickTracker\HtmlClickTracker'));
-    $container->setDefinition('civi_flexmailer_text_click_tracker', new Definition('Civi\FlexMailer\ClickTracker\TextClickTracker'));
+    $container->setDefinition('civi_flexmailer_html_click_tracker', new Definition('Civi\FlexMailer\ClickTracker\HtmlClickTracker'))->setPublic(TRUE);
+    $container->setDefinition('civi_flexmailer_text_click_tracker', new Definition('Civi\FlexMailer\ClickTracker\TextClickTracker'))->setPublic(TRUE);
 
     foreach (self::getListenerSpecs() as $listenerSpec) {
-      $container->findDefinition('dispatcher')->addMethodCall('addListenerService', $listenerSpec);
+      $container->findDefinition('dispatcher')->addMethodCall('addListener', [$listenerSpec[0], [new ServiceClosureArgument(new Reference($listenerSpec[1][0])), $listenerSpec[1][1]], $listenerSpec[2]]);
     }
 
     $container->findDefinition('civi_api_kernel')->addMethodCall('registerApiProvider', array(new Reference('civi_flexmailer_api_overrides')));
   }
 
-  public static function registerListeners(ContainerAwareEventDispatcher $dispatcher) {
+  public static function registerListeners(EventDispatcher $dispatcher) {
     foreach (self::getListenerSpecs() as $listenerSpec) {
-      $dispatcher->addListenerService($listenerSpec[0], $listenerSpec[1], $listenerSpec[2]);
-      $dispatcher->addSubscriberService('civi_flexmailer_api_overrides', 'Civi\FlexMailer\API\Overrides');
+      $dispatcher->addListener($listenerSpec[0], [new SercviceClosureArgument(new Reference($listenerSpec[1][0])), $listenerSpec[1][1]], $listenerSpec[2]);
+      $dispatcher->addSubscriber(new Reference('civi_flexmailer_api_overrides'));
     }
   }
 
