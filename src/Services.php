@@ -14,8 +14,6 @@ use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher;
-use Civi\FlexMailer\API\Overrides as AO;
 use Civi\FlexMailer\FlexMailer as FM;
 
 /**
@@ -74,13 +72,6 @@ class Services {
     }
 
     $container->findDefinition('civi_api_kernel')->addMethodCall('registerApiProvider', array(new Reference('civi_flexmailer_api_overrides')));
-  }
-
-  public static function registerListeners(EventDispatcher $dispatcher) {
-    foreach (self::getListenerSpecs() as $listenerSpec) {
-      $dispatcher->addListener($listenerSpec[0], [new SercviceClosureArgument(new Reference($listenerSpec[1][0])), $listenerSpec[1][1]], $listenerSpec[2]);
-      $dispatcher->addSubscriber(new Reference('civi_flexmailer_api_overrides'));
-    }
   }
 
   /**
