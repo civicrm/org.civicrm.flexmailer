@@ -10,7 +10,6 @@
  */
 namespace Civi\FlexMailer;
 
-use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
@@ -68,7 +67,7 @@ class Services {
     $container->setDefinition('civi_flexmailer_text_click_tracker', new Definition('Civi\FlexMailer\ClickTracker\TextClickTracker'))->setPublic(TRUE);
 
     foreach (self::getListenerSpecs() as $listenerSpec) {
-      $container->findDefinition('dispatcher')->addMethodCall('addListener', [$listenerSpec[0], [new ServiceClosureArgument(new Reference($listenerSpec[1][0])), $listenerSpec[1][1]], $listenerSpec[2]]);
+      $container->findDefinition('dispatcher')->addMethodCall('addListenerService', $listenerSpec);
     }
 
     $container->findDefinition('civi_api_kernel')->addMethodCall('registerApiProvider', array(new Reference('civi_flexmailer_api_overrides')));

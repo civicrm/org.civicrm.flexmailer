@@ -23,7 +23,7 @@
     to provide richer email features.
   </comments>
   <compatibility>
-    <ver>5.27</ver>
+    <ver>5.13</ver>
   </compatibility>
   <civix>
     <namespace>CRM/Flexmailer</namespace>
