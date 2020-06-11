@@ -40,7 +40,7 @@ class BaseClickTracker {
 
     $trackable_url = $parsed[1];
 
-    // Proces the query parameters, if there are any.
+    // Process the query parameters, if there are any.
     $tokenised_params = [];
     $static_params = [];
     if (!empty($parsed[2])) {

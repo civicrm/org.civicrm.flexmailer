@@ -19,7 +19,7 @@ class TextClickTracker implements ClickTrackerInterface {
     return self::replaceTextUrls($msg,
       function ($url) use ($mailing_id, $queue_id, $getTrackerURL) {
         if (strpos($url, '{') !== FALSE) {
-          $data = HtmlClickTracker::getTrackerURLForUrlWithTokens($url, $mailing_id, $queue_id);
+          $data = BaseClickTracker::getTrackerURLForUrlWithTokens($url, $mailing_id, $queue_id);
         }
         else {
           $data = $getTrackerURL($url, $mailing_id, $queue_id);
