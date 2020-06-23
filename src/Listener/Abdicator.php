@@ -43,7 +43,8 @@ class Abdicator {
       case 'auto':
         // Transitional support for old hidden setting "experimentalFlexMailerEngine" (bool)
         // TODO: Remove this. Maybe after Q4 2019.
-        return (bool) \CRM_Core_BAO_Setting::getItem('Mailing Preferences', 'experimentalFlexMailerEngine');
+        // TODO: Change this to default to flexmailer
+        return (bool) \Civi::settings()->get('experimentalFlexMailerEngine');
 
       case 'bao':
         return FALSE;

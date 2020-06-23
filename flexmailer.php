@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Civi v4.6 does not provide all the API's we would need to define
+ * Civi v5.19 does not provide all the API's we would need to define
  * FlexMailer in an extension, but you can patch core to simulate them.
  * These define()s tell core to enable any such hacks (if available).
  */
@@ -13,34 +13,6 @@ define('CIVICRM_FLEXMAILER_HACK_REQUIRED_TOKENS', 'call://civi_flexmailer_requir
 require_once 'flexmailer.civix.php';
 
 use CRM_Flexmailer_ExtensionUtil as E;
-
-/**
- * Define an autoloader for FlexMailer.
- *
- * FlexMailer uses the namespace 'Civi\FlexMailer', but the
- * autoloader in Civi v4.6 doesn't support this, so we provide
- * our own autoloader.
- *
- * TODO: Whenever v4.6 dies, remove this file and define the
- * autoloader in info.xml
- *
- * @link http://www.php-fig.org/psr/psr-4/examples/
- */
-function _flexmailer_autoload($class) {
-  $prefix = 'Civi\\FlexMailer\\';
-  $base_dir = __DIR__ . '/src/';
-  $len = strlen($prefix);
-  if (strncmp($prefix, $class, $len) !== 0) {
-    return;
-  }
-  $relative_class = substr($class, $len);
-  $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
-  if (file_exists($file)) {
-    require $file;
-  }
-}
-
-spl_autoload_register('_flexmailer_autoload');
 
 /**
  * Implements hook_civicrm_config().
@@ -127,19 +99,6 @@ function flexmailer_civicrm_managed(&$entities) {
 }
 
 /**
- * Implements hook_civicrm_caseTypes().
- *
- * Generate a list of case-types.
- *
- * Note: This hook only runs in CiviCRM 4.4+.
- *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_caseTypes
- */
-function flexmailer_civicrm_caseTypes(&$caseTypes) {
-  _flexmailer_civix_civicrm_caseTypes($caseTypes);
-}
-
-/**
  * Implements hook_civicrm_angularModules().
  *
  * Generate a list of Angular modules.
@@ -169,13 +128,13 @@ function flexmailer_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
  */
 function flexmailer_civicrm_navigationMenu(&$menu) {
   _flexmailer_civix_insert_navigation_menu($menu, 'Administer/CiviMail', [
-    'label' => ts('Flexmailer Settings', array('domain' => 'org.civicrm.flexmailer')),
+    'label' => E::ts('Flexmailer Settings'),
     'name' => 'flexmailer_settings',
     'permission' => 'administer CiviCRM',
-    'child' => array(),
+    'child' => [],
     'operator' => 'AND',
     'separator' => 0,
-    'url' => CRM_Utils_System::url('civicrm/admin/flexmailer', 'reset=1', TRUE),
+    'url' => CRM_Utils_System::url('civicrm/admin/setting/flexmailer', 'reset=1', TRUE),
   ]);
   _flexmailer_civix_navigationMenu($menu);
 }
