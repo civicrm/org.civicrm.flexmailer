@@ -25,6 +25,8 @@ use Civi\Token\TokenRow;
  */
 class DefaultComposer extends BaseListener {
 
+  protected $autoGeneratePlainText = FALSE;
+
   public function onRun(RunEvent $e) {
     // FIXME: This probably doesn't belong here...
     if (defined('CIVICRM_MAIL_SMARTY') && CIVICRM_MAIL_SMARTY) {
@@ -62,6 +64,9 @@ class DefaultComposer extends BaseListener {
       'text/plain');
     $tp->addMessage('body_html', isset($tpls['html']) ? $tpls['html'] : '',
       'text/html');
+    if (empty($tpls['text'])) {
+      $this->autoGeneratePlainText = TRUE;
+    }
 
     $hasContent = FALSE;
     foreach ($e->getTasks() as $key => $task) {
@@ -146,10 +151,14 @@ class DefaultComposer extends BaseListener {
     FlexMailerTask $task,
     TokenRow $row
   ) {
+    $html = $row->render('body_html');
+    $text = $this->autoGeneratePlainText ?
+      \CRM_Utils_String::htmlToText($html) :
+      $row->render('body_text');
     return array(
       'Subject' => $row->render('subject'),
-      'text' => $row->render('body_text'),
-      'html' => $row->render('body_html'),
+      'text' => $text,
+      'html' => $html,
     );
   }
 
